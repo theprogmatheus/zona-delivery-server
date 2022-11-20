@@ -23,7 +23,7 @@ public class UserService {
 
 		if (this.userRepository.count() <= 0)
 			return this.userRepository.saveAndFlush(new UserEntity(0, UUID.randomUUID(), "admin", "admin@mail.com",
-					PASSWORD_ENCODER.encode("admin"), Arrays.asList()));
+					PASSWORD_ENCODER.encode("admin"), Arrays.asList(), null));
 
 		return null;
 	}

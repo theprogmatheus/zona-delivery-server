@@ -2,6 +2,7 @@ package com.github.theprogmatheus.zonadelivery.server.entity;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,11 +23,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "users")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity implements UserDetails {
@@ -53,6 +57,9 @@ public class UserEntity implements UserDetails {
 	@JoinTable(name = "users_authorities", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "authority_id") })
 	private List<UserAuthorityEntity> authorities;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
+	private Set<RestaurantEntity> restaurants;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
