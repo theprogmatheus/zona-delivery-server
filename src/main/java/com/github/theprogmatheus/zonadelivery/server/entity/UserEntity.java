@@ -1,24 +1,30 @@
 package com.github.theprogmatheus.zonadelivery.server.entity;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,8 +35,7 @@ public class UserEntity implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
-	
+
 	@Type(type = "uuid-char")
 	@Column(unique = true, nullable = false, columnDefinition = "VARCHAR(36)")
 	private UUID userId;
@@ -44,9 +49,15 @@ public class UserEntity implements UserDetails {
 	@Column(nullable = false, columnDefinition = "VARCHAR(256)")
 	private String password;
 
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "users_authorities", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "authority_id") })
+	private List<UserAuthorityEntity> authorities;
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Arrays.asList();
+		return this.authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+				.collect(Collectors.toList());
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.github.theprogmatheus.zonadelivery.server.service;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class UserService {
 	public UserEntity createDefaultUserIfNotExists() {
 
 		if (this.userRepository.count() <= 0)
-			return this.userRepository.saveAndFlush(
-					new UserEntity(0, UUID.randomUUID(), "admin", "admin@mail.com", PASSWORD_ENCODER.encode("admin")));
+			return this.userRepository.saveAndFlush(new UserEntity(0, UUID.randomUUID(), "admin", "admin@mail.com",
+					PASSWORD_ENCODER.encode("admin"), Arrays.asList()));
 
 		return null;
 	}
