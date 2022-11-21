@@ -53,7 +53,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			Authentication authResult) throws IOException, ServletException {
 
 		Date expireAt = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
-		String token = JWT.create().withSubject(((UserEntity) authResult.getPrincipal()).getUserId().toString())
+		String token = JWT.create().withSubject(((UserEntity) authResult.getPrincipal()).getId().toString())
 				.withExpiresAt(expireAt).sign(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes()));
 
 		Map<String, Object> responseBody = new HashMap<>();

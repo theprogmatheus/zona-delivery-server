@@ -25,12 +25,10 @@ import lombok.Setter;
 public class RestaurantEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-
-	@Column(nullable = false, unique = true, columnDefinition = "VARCHAR(36)")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(columnDefinition = "VARCHAR(36)", nullable = false, unique = true)
 	@Type(type = "uuid-char")
-	private UUID restaurantId;
+	private UUID id;
 
 	@Column(nullable = false, unique = true, columnDefinition = "VARCHAR(128)")
 	private String nameId;

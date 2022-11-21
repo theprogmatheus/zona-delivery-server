@@ -8,11 +8,9 @@ import org.springframework.stereotype.Repository;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
 	public UserEntity findByUsername(String username);
-
-	public UserEntity findByUserId(UUID userId);
 
 	public UserEntity findByEmail(String email);
 

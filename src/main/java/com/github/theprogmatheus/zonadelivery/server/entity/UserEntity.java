@@ -37,12 +37,10 @@ public class UserEntity implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(columnDefinition = "VARCHAR(36)", nullable = false, unique = true)
 	@Type(type = "uuid-char")
-	@Column(unique = true, nullable = false, columnDefinition = "VARCHAR(36)")
-	private UUID userId;
+	private UUID id;
 
 	@Column(unique = true, nullable = false, columnDefinition = "VARCHAR(128)")
 	private String username;

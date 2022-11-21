@@ -56,7 +56,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			String userUuid = JWT.require(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes())).build()
 					.verify(header.replace(TOKEN_PREFIX, "")).getSubject();
 			if (userUuid != null) {
-				UserEntity user = this.userRepository.findByUserId(UUID.fromString(userUuid));
+				UserEntity user = this.userRepository.findById(UUID.fromString(userUuid)).orElse(null);
 				if (user != null)
 					return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 			}

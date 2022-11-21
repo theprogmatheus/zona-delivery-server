@@ -22,7 +22,7 @@ public class UserService {
 	public UserEntity createDefaultUserIfNotExists() {
 
 		if (this.userRepository.count() <= 0)
-			return this.userRepository.saveAndFlush(new UserEntity(0, UUID.randomUUID(), "admin", "admin@mail.com",
+			return this.userRepository.saveAndFlush(new UserEntity(null, "admin", "admin@mail.com",
 					PASSWORD_ENCODER.encode("admin"), Arrays.asList(), null));
 
 		return null;
@@ -36,8 +36,8 @@ public class UserService {
 		return this.userRepository.findByEmail(email);
 	}
 
-	public UserEntity getUserByUserId(UUID userId) {
-		return this.userRepository.findByUserId(userId);
+	public UserEntity getUserById(UUID userId) {
+		return this.userRepository.findById(userId).orElse(null);
 	}
 
 	public boolean checkPassword(String rawPassword, String encodedPassword) {
