@@ -12,9 +12,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonInclude(Include.NON_NULL)
 @Data
+@NoArgsConstructor
 public class UserDTO {
 
 	private UUID id;

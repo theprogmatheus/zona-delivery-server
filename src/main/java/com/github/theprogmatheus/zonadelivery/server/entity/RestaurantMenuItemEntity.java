@@ -15,17 +15,13 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "restaurants")
+@Entity(name = "restaurant_menu_items")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class RestaurantEntity {
+public class RestaurantMenuItemEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,17 +29,16 @@ public class RestaurantEntity {
 	@Type(type = "uuid-char")
 	private UUID id;
 
-	@Column(nullable = false, unique = true, columnDefinition = "VARCHAR(128)")
-	private String nameId;
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private RestaurantMenuCategoryEntity category;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
-	private String displayName;
+	private String name;
 
-	@ManyToOne
-	@JoinColumn(name = "owner_id")
-	private UserEntity owner;
+	@Column(nullable = false)
+	private double price;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
-	private Set<RestaurantMenuEntity> menus;
-
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "item")
+	private Set<RestaurantMenuAditionalEntity> aditionals;
 }
