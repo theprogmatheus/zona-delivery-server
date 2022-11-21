@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
 	</properties>
-	
+
 	<dependencies>
 
 		<dependency>
@@ -85,6 +85,14 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.github.slugify/slugify -->
+		<dependency>
+			<groupId>com.github.slugify</groupId>
+			<artifactId>slugify</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+
 
 	</dependencies>
 
