@@ -29,11 +29,15 @@ public class RestaurantService {
 		while (getRestaurantByNameId(nameId) != null)
 			nameId = createNameIdByRestaurantName(name);
 
-		return this.repository.saveAndFlush(new RestaurantEntity(null, nameId, name, owner, null));
+		return this.repository.saveAndFlush(new RestaurantEntity(null, nameId, name, owner, null, null));
 	}
 
 	public String createNameIdByRestaurantName(String name) {
 		return Utils.SLUGIFY.slugify(name).concat("-").concat(UUID.randomUUID().toString().split("-")[0]);
+	}
+
+	public RestaurantEntity getRestaurantById(UUID id) {
+		return this.repository.findById(id).orElse(null);
 	}
 
 	public RestaurantEntity getRestaurantByNameId(String nameId) {
