@@ -1,5 +1,6 @@
 package com.github.theprogmatheus.zonadelivery.server.controller;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,8 @@ import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantDTO;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderDTO;
 import com.github.theprogmatheus.zonadelivery.server.dto.UserDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.repository.OrderRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantRepository;
 import com.github.theprogmatheus.zonadelivery.server.service.UserService;
@@ -32,8 +35,13 @@ public class IndexController {
 
 	@GetMapping("/")
 	public Object index() {
-		return orderRepository.findAll().stream().map(order -> new RestaurantOrderDTO(order))
-				.collect(Collectors.toList());
+
+		RestaurantOrderEntity order = this.orderRepository.findAll().stream().findFirst().orElse(null);
+
+		order.setItems(Arrays.asList(new RestaurantOrderItem("Pizza de Calabresa", 29.99, 1,
+				Arrays.asList(new RestaurantOrderItem("1/2 Pizza de 5 Queijos", 19.99, 1, null)))));
+
+		return new RestaurantOrderDTO(this.orderRepository.saveAndFlush(order));
 	}
 
 	@GetMapping("/restaurants")

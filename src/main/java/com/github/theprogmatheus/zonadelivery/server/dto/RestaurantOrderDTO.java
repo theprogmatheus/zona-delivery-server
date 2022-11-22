@@ -1,12 +1,12 @@
 package com.github.theprogmatheus.zonadelivery.server.dto;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
-import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderItemEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderItem;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class RestaurantOrderDTO {
 	private String channel;
 	private RestaurantCustomerDTO customer;
 	private RestaurantCustomerAddressDTO address;
-	private Set<RestaurantOrderItemEntity> items;
+	private List<RestaurantOrderItem> items;
 
 	public RestaurantOrderDTO(RestaurantOrderEntity restaurantOrderEntity) {
 		if (restaurantOrderEntity != null) {

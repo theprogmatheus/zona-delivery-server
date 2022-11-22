@@ -1,11 +1,9 @@
 package com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,12 +12,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerAddressEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +32,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@TypeDef(name = "json", typeClass = JsonStringType.class)
 public class RestaurantOrderEntity {
 
 	@Id
@@ -55,8 +59,21 @@ public class RestaurantOrderEntity {
 	@JoinColumn(name = "address_id")
 	private RestaurantCustomerAddressEntity address;
 
-	@ElementCollection
-	@CollectionTable(name = "restaurant_order_items", joinColumns = @JoinColumn(name = "order_id"))
-	private Set<RestaurantOrderItemEntity> items;
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	private List<RestaurantOrderItem> items;
+
+	@JsonInclude(Include.NON_NULL)
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class RestaurantOrderItem {
+
+		private String productName;
+		private double productPrice;
+		private int amount;
+		private List<RestaurantOrderItem> aditionals;
+
+	}
 
 }

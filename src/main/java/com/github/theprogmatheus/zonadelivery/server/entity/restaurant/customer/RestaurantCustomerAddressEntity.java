@@ -2,19 +2,22 @@ package com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer
 
 import java.util.UUID;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -63,7 +66,20 @@ public class RestaurantCustomerAddressEntity {
 	@Column(columnDefinition = "VARCHAR(128)")
 	private String reference;
 
-	@OneToOne(fetch = FetchType.EAGER, mappedBy = "address")
-	private RestaurantCustomerAddressCoordsEntity coordinates;
+	@Embedded
+	@AttributeOverrides({ @AttributeOverride(name = "longitude", column = @Column(name = "coordinates_longitude")),
+			@AttributeOverride(name = "latitude", column = @Column(name = "coordinates_latitude")) })
+	private RestaurantCustomerAddressCoords coordinates;
+
+	@Embeddable
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class RestaurantCustomerAddressCoords {
+
+		private double longitude;
+		private double latitude;
+
+	}
 
 }

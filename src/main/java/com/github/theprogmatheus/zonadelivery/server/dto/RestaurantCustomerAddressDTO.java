@@ -65,10 +65,8 @@ public class RestaurantCustomerAddressDTO {
 			if (address.getReference() != null)
 				this.reference = address.getReference();
 
-			if (address.getCoordinates() != null) {
-				address.getCoordinates().setAddress(null);
+			if (address.getCoordinates() != null)
 				this.coordinates = new RestaurantCustomerAddressCoordsDTO(address.getCoordinates());
-			}
 
 		}
 	}
