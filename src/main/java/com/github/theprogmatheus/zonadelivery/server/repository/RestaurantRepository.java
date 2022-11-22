@@ -9,5 +9,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.RestaurantEntity;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<RestaurantEntity, UUID> {
-
+	
+	public RestaurantEntity findByNameId(String nameId);
+	
 }

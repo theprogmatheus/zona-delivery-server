@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.github.theprogmatheus.zonadelivery.server.config.security.CustomPasswordEncoder;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.repository.UserRepository;
+import com.github.theprogmatheus.zonadelivery.server.util.Utils;
 
 @Service
 public class UserService {
@@ -19,23 +20,36 @@ public class UserService {
 	@Autowired
 	private UserRepository repository;
 
-	public UserEntity createDefaultUserIfNotExists() {
-
+	public Object createDefaultUserIfNotExists() {
 		if (this.repository.count() <= 0)
-			return this.repository.saveAndFlush(new UserEntity(null, "admin", "admin@mail.com",
-					PASSWORD_ENCODER.encode("admin"), Arrays.asList(), null));
+			return createNewUserAccount("admin", "admin", "admin@mail.com");
 
 		return null;
 	}
 
-	public UserEntity createNewUserAccount(String username, String password, String email) {
+	public Object createNewUserAccount(String username, String password, String email) {
 
-		UserEntity userEntity = new UserEntity(null, username, email, PASSWORD_ENCODER.encode(password), null, null);
+		if (username != null && password != null) {
 
-		return this.repository.saveAndFlush(userEntity);
+			if (!username.matches(Utils.REGEX_USERNAME))
+				return "The username is invalid"; // user name invalid
+
+			if (email != null && !email.matches(Utils.REGEX_EMAIL))
+				return "The email is invalid"; // email invalid
+
+			if (getUserByUsername(username) != null)
+				return "The username already exists"; // user exists
+
+			return this.repository.saveAndFlush(
+					new UserEntity(null, username, email, PASSWORD_ENCODER.encode(password), Arrays.asList(), null));
+		}
+
+		return "The 'username' and 'password' are required fields in your request body, do not leave them null";
 	}
 
 	public UserEntity getUserByUsername(String username) {
+		if (username != null)
+			username = username.toLowerCase();
 		return this.repository.findByUsername(username);
 	}
 
