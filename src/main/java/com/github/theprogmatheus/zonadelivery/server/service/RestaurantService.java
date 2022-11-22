@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantIFoodMerchantEntity;
+import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantIfoodMerchantRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantRepository;
 import com.github.theprogmatheus.zonadelivery.server.util.Utils;
 
@@ -14,7 +16,21 @@ import com.github.theprogmatheus.zonadelivery.server.util.Utils;
 public class RestaurantService {
 
 	@Autowired
-	private RestaurantRepository repository;
+	private RestaurantRepository restaurantRepository;
+
+	@Autowired
+	private RestaurantIfoodMerchantRepository restaurantIFoodMerchantRepository;
+
+	public RestaurantEntity getRestaurantByIFoodMerchantId(String iFoodMerchantId) {
+
+		RestaurantIFoodMerchantEntity restaurantIFoodMerchantEntity = this.restaurantIFoodMerchantRepository
+				.findByMerchantId(iFoodMerchantId);
+
+		if (restaurantIFoodMerchantEntity != null)
+			return restaurantIFoodMerchantEntity.getRestaurant();
+
+		return null;
+	}
 
 	public Object createNewRestaurant(UserEntity owner, String name) {
 
@@ -29,7 +45,7 @@ public class RestaurantService {
 		while (getRestaurantByNameId(nameId) != null)
 			nameId = createNameIdByRestaurantName(name);
 
-		return this.repository.saveAndFlush(new RestaurantEntity(null, nameId, name, owner, null, null));
+		return this.restaurantRepository.saveAndFlush(new RestaurantEntity(null, nameId, name, owner, null, null));
 	}
 
 	public String createNameIdByRestaurantName(String name) {
@@ -37,15 +53,19 @@ public class RestaurantService {
 	}
 
 	public RestaurantEntity getRestaurantById(UUID id) {
-		return this.repository.findById(id).orElse(null);
+		return this.restaurantRepository.findById(id).orElse(null);
 	}
 
 	public RestaurantEntity getRestaurantByNameId(String nameId) {
-		return this.repository.findByNameId(nameId);
+		return this.restaurantRepository.findByNameId(nameId);
 	}
 
-	public RestaurantRepository getRepository() {
-		return repository;
+	public RestaurantRepository getRestaurantRepository() {
+		return restaurantRepository;
+	}
+
+	public RestaurantIfoodMerchantRepository getRestaurantIfoodMerchantRepository() {
+		return restaurantIFoodMerchantRepository;
 	}
 
 }

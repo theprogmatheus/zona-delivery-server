@@ -17,12 +17,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
+@Entity(name = "restaurant_ifood_merchant_entity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RestaurantIfoodMerchantEntity {
+public class RestaurantIFoodMerchantEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

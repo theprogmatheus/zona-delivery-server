@@ -5,10 +5,10 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantIfoodMerchantEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantIFoodMerchantEntity;
 
 @Repository
-public interface RestaurantIfoodMerchantRepository extends JpaRepository<RestaurantIfoodMerchantEntity, UUID> {
+public interface RestaurantIfoodMerchantRepository extends JpaRepository<RestaurantIFoodMerchantEntity, UUID> {
 
-	public RestaurantIfoodMerchantEntity findByMerchantId(String merchantId);
+	public RestaurantIFoodMerchantEntity findByMerchantId(String merchantId);
 }
