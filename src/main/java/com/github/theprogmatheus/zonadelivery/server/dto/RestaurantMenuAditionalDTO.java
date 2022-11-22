@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.theprogmatheus.zonadelivery.server.entity.RestaurantMenuAditionalEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuAditionalEntity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

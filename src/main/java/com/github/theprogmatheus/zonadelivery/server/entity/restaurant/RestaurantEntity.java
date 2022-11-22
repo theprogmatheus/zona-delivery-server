@@ -1,4 +1,4 @@
-package com.github.theprogmatheus.zonadelivery.server.entity;
+package com.github.theprogmatheus.zonadelivery.server.entity.restaurant;
 
 import java.util.Set;
 import java.util.UUID;
@@ -14,6 +14,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
+
+import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

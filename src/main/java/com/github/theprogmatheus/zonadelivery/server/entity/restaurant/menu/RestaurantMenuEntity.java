@@ -1,4 +1,4 @@
-package com.github.theprogmatheus.zonadelivery.server.entity;
+package com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu;
 
 import java.util.Set;
 import java.util.UUID;
@@ -15,13 +15,15 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "restaurant_menu_categories")
+@Entity(name = "restaurant_menus")
 @Getter
 @Setter
-public class RestaurantMenuCategoryEntity {
+public class RestaurantMenuEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,13 +32,13 @@ public class RestaurantMenuCategoryEntity {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "menu_id")
-	private RestaurantMenuEntity menu;
+	@JoinColumn(name = "restaurant_id")
+	private RestaurantEntity restaurant;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
 	private String name;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
-	private Set<RestaurantMenuItemEntity> items;
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu")
+	private Set<RestaurantMenuCategoryEntity> categories;
 
 }

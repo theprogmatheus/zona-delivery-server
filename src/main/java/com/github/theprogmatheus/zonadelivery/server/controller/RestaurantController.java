@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantDTO;
-import com.github.theprogmatheus.zonadelivery.server.entity.RestaurantEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
 import com.github.theprogmatheus.zonadelivery.server.service.RestaurantService;
 
 @RestController

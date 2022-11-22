@@ -1,27 +1,24 @@
-package com.github.theprogmatheus.zonadelivery.server.entity;
+package com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu;
 
-import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "restaurant_menus")
+@Entity(name = "restaurant_menu_item_aditionals")
 @Getter
 @Setter
-public class RestaurantMenuEntity {
+public class RestaurantMenuAditionalEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,13 +27,13 @@ public class RestaurantMenuEntity {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "restaurant_id")
-	private RestaurantEntity restaurant;
+	@JoinColumn(name = "item_id")
+	private RestaurantMenuItemEntity item;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
 	private String name;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu")
-	private Set<RestaurantMenuCategoryEntity> categories;
+	@Column(nullable = false)
+	private double price;
 
 }

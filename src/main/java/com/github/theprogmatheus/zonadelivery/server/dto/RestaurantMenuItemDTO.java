@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.theprogmatheus.zonadelivery.server.entity.RestaurantMenuItemEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuItemEntity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

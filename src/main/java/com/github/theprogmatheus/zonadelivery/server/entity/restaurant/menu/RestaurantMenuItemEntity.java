@@ -1,4 +1,4 @@
-package com.github.theprogmatheus.zonadelivery.server.entity;
+package com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu;
 
 import java.util.Set;
 import java.util.UUID;
