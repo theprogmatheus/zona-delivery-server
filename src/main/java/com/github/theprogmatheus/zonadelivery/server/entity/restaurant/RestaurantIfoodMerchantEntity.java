@@ -12,8 +12,17 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Type;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
-public class RestaurantIfoodMerchant {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class RestaurantIfoodMerchantEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

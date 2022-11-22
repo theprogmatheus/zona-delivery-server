@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
+import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderConfirmedEventHandler;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodEvent;
+import com.github.theprogmatheus.zonadelivery.server.service.OrderService;
 
 @Component
 public class IFoodEventsManager {
@@ -18,16 +21,15 @@ public class IFoodEventsManager {
 
 	private List<String> acknowEvents = new ArrayList<>();
 
+	@Autowired
+	private OrderService orderService;
+
 	private void registerAllEventHandlers() {
 
 		registeredEventHandlers = new HashMap<>();
 
-		/*
-		registerEventHandler(new IFoodOrderConfirmedEventHandler(this.orderRepository));
-		registerEventHandler(new IFoodOrderDispatchedEventHandler(this.orderRepository));
-		registerEventHandler(new IFoodOrderCancelledEventHandler(this.orderRepository));
-		registerEventHandler(new IFoodOrderConcludedEventHandler(this.orderRepository));
-		*/
+		// register events
+		registerEventHandler(new IFoodOrderConfirmedEventHandler(this.orderService));
 	}
 
 	/*

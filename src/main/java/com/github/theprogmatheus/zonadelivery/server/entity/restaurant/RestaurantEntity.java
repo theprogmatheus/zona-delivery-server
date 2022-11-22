@@ -50,6 +50,6 @@ public class RestaurantEntity {
 	private Set<RestaurantMenuEntity> menus;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "merchantId")
-	private Set<RestaurantIfoodMerchant> iFoodMerchants;
+	private Set<RestaurantIfoodMerchantEntity> iFoodMerchants;
 
 }

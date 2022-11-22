@@ -1,5 +1,6 @@
 package com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +41,9 @@ public class RestaurantOrderEntity {
 	@Column(columnDefinition = "VARCHAR(36)", nullable = false, unique = true)
 	@Type(type = "uuid-char")
 	private UUID id;
+	
+	@Column(nullable = false)
+	private Date createdAt;
 
 	@Column(columnDefinition = "VARCHAR(8)", nullable = false)
 	private String simpleId;

@@ -1,5 +1,6 @@
 package com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.AttributeOverride;
@@ -70,6 +71,28 @@ public class RestaurantCustomerAddressEntity {
 	@AttributeOverrides({ @AttributeOverride(name = "longitude", column = @Column(name = "coordinates_longitude")),
 			@AttributeOverride(name = "latitude", column = @Column(name = "coordinates_latitude")) })
 	private RestaurantCustomerAddressCoords coordinates;
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(city, complement, coordinates, country, neighborhood, postalCode, reference, state,
+				streetName, streetNumber);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RestaurantCustomerAddressEntity other = (RestaurantCustomerAddressEntity) obj;
+		return Objects.equals(city, other.city) && Objects.equals(complement, other.complement)
+				&& Objects.equals(coordinates, other.coordinates) && Objects.equals(country, other.country)
+				&& Objects.equals(neighborhood, other.neighborhood) && Objects.equals(postalCode, other.postalCode)
+				&& Objects.equals(reference, other.reference) && Objects.equals(state, other.state)
+				&& Objects.equals(streetName, other.streetName) && Objects.equals(streetNumber, other.streetNumber);
+	}
 
 	@Embeddable
 	@Data

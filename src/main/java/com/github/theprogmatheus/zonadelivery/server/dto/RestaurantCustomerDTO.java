@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 public class RestaurantCustomerDTO {
 
 	private UUID id;
-	private RestaurantDTO restaurant;
 	private String name;
 	private String ifoodCustomerId;
 	private String whatsappCustomerId;
@@ -30,19 +29,16 @@ public class RestaurantCustomerDTO {
 
 			if (restaurantCustomerEntity.getId() != null)
 				this.id = restaurantCustomerEntity.getId();
-			
-			if (restaurantCustomerEntity.getRestaurant() != null)
-				this.restaurant = new RestaurantDTO(restaurantCustomerEntity.getRestaurant());
-			
+
 			if (restaurantCustomerEntity.getName() != null)
 				this.name = restaurantCustomerEntity.getName();
-			
+
 			if (restaurantCustomerEntity.getIfoodCustomerId() != null)
 				this.ifoodCustomerId = restaurantCustomerEntity.getIfoodCustomerId();
-			
+
 			if (restaurantCustomerEntity.getWhatsappCustomerId() != null)
 				this.whatsappCustomerId = restaurantCustomerEntity.getWhatsappCustomerId();
-			
+
 			if (restaurantCustomerEntity.getPhone() != null)
 				this.phone = restaurantCustomerEntity.getPhone();
 
