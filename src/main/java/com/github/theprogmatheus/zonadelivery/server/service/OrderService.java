@@ -3,6 +3,7 @@ package com.github.theprogmatheus.zonadelivery.server.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,9 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderItem;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPayment;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPaymentMethod;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderTotal;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItemOption;
@@ -67,18 +71,34 @@ public class OrderService {
 							ifoodItem.getQuantity(), aditionals));
 				}
 
-				return createNewOrder(restaurant, "IFOOD", ifoodOrder.getDisplayId(), customer, address, items);
+				RestaurantOrderTotal total = new RestaurantOrderTotal(ifoodOrder.getTotal().getSubTotal(),
+						ifoodOrder.getTotal().getDeliveryFee(), ifoodOrder.getTotal().getBenefits(),
+						ifoodOrder.getTotal().getOrderAmount(), ifoodOrder.getTotal().getAdditionalFees());
+
+				RestaurantOrderPayment payment = new RestaurantOrderPayment(ifoodOrder.getPayments().getPrepaid(),
+						ifoodOrder.getPayments().getPending(),
+						ifoodOrder.getPayments().getMethods().stream().map(paymentPethod -> {
+
+							return new RestaurantOrderPaymentMethod(paymentPethod.getValue(),
+									paymentPethod.getCurrency(), paymentPethod.getMethod(), paymentPethod.getType(),
+									paymentPethod.isPrepaid(), paymentPethod.getCash(), paymentPethod.getCard());
+						}).collect(Collectors.toList()));
+
+				return createNewOrder(restaurant, "IFOOD", ifoodOrder.getDisplayId(), null, ifoodOrder.getOrderType(),
+						customer, address, items, total, payment);
 			}
 		}
 		return null;
 	}
 
 	public RestaurantOrderEntity createNewOrder(RestaurantEntity restaurant, String channel, String simpleId,
-			RestaurantCustomerEntity customer, RestaurantCustomerAddressEntity address,
-			List<RestaurantOrderItem> items) {
-		return this.orderRepository.saveAndFlush(new RestaurantOrderEntity(null, new Date(),
-				((simpleId != null && !simpleId.isEmpty()) ? simpleId : generateOrderSimpleId()), restaurant, channel,
-				customer, address, items));
+			Date deliveryDateTime, String orderType, RestaurantCustomerEntity customer,
+			RestaurantCustomerAddressEntity address, List<RestaurantOrderItem> items, RestaurantOrderTotal total,
+			RestaurantOrderPayment payment) {
+
+		return this.orderRepository.saveAndFlush(new RestaurantOrderEntity(null, restaurant, new Date(),
+				(simpleId != null ? simpleId : generateOrderSimpleId()), deliveryDateTime, orderType, channel, customer,
+				address, items, total, payment));
 	}
 
 	public String generateOrderSimpleId() {
