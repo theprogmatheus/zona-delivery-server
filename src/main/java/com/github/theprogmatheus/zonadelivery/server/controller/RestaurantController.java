@@ -1,12 +1,15 @@
 package com.github.theprogmatheus.zonadelivery.server.controller;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,4 +98,57 @@ public class RestaurantController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
 	}
+
+	@GetMapping("/{restaurantId}/ifood/merchants")
+	public Object merchants(@PathVariable UUID restaurantId) {
+		try {
+
+			Object result = this.restaurantService
+					.getRestaurantIFoodMerchants(this.restaurantService.getRestaurantById(restaurantId));
+
+			if (result instanceof Set)
+				return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
+			return ResponseEntity.ok(result);
+
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+		}
+	}
+
+	@PostMapping("/{restaurantId}/ifood/add_merchant")
+	public Object addMerchant(@PathVariable UUID restaurantId, @RequestBody Map<String, String> body) {
+		try {
+
+			Object result = this.restaurantService.addRestaurantIFoodMerchant(
+					this.restaurantService.getRestaurantById(restaurantId), body.get("merchantName"),
+					body.get("merchantId"));
+
+			if (result instanceof RestaurantEntity)
+				return ResponseEntity.status(HttpStatus.CREATED).body(new RestaurantDTO((RestaurantEntity) result));
+
+			return ResponseEntity.ok(result);
+
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+		}
+	}
+
+	@DeleteMapping("/{restaurantId}/ifood/delete_merchant")
+	public Object deleteMerchant(@PathVariable UUID restaurantId, @RequestBody Map<String, String> body) {
+		try {
+
+			Object result = this.restaurantService.deleteRestaurantIFoodMerchant(
+					this.restaurantService.getRestaurantById(restaurantId), body.get("merchantId"));
+
+			if (result instanceof RestaurantEntity)
+				return ResponseEntity.status(HttpStatus.CREATED).body(new RestaurantDTO((RestaurantEntity) result));
+
+			return ResponseEntity.ok(result);
+
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+		}
+	}
+
 }

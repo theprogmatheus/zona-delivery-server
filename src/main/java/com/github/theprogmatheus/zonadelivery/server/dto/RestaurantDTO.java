@@ -21,6 +21,7 @@ public class RestaurantDTO {
 	private String displayName;
 	private UserDTO owner;
 	private Set<RestaurantMenuDTO> menus;
+	private Set<RestaurantIFoodMerchantDTO> iFoodMerchants;
 
 	public RestaurantDTO(RestaurantEntity restaurantEntity) {
 		if (restaurantEntity != null) {
@@ -43,6 +44,10 @@ public class RestaurantDTO {
 					menu.setRestaurant(null);
 					return new RestaurantMenuDTO(menu);
 				}).collect(Collectors.toSet());
+
+			if (restaurantEntity.getIFoodMerchants() != null)
+				this.iFoodMerchants = restaurantEntity.getIFoodMerchants().stream()
+						.map(merchant -> new RestaurantIFoodMerchantDTO(merchant)).collect(Collectors.toSet());
 
 		}
 	}

@@ -49,7 +49,7 @@ public class RestaurantEntity {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
 	private Set<RestaurantMenuEntity> menus;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "merchantId")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
 	private Set<RestaurantIFoodMerchantEntity> iFoodMerchants;
 
 }

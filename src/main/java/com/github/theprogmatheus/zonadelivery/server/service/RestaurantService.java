@@ -1,10 +1,12 @@
 package com.github.theprogmatheus.zonadelivery.server.service;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantIFoodMerchantDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantIFoodMerchantEntity;
@@ -88,6 +90,60 @@ public class RestaurantService {
 			return "You need to enter a valid ownerId";
 
 		restaurant.setOwner(newOwner);
+
+		return this.restaurantRepository.saveAndFlush(restaurant);
+	}
+
+	public Object getRestaurantIFoodMerchants(RestaurantEntity restaurant) {
+
+		if (restaurant == null)
+			return "You need to enter a valid restaurant";
+
+		return restaurant.getIFoodMerchants().stream().map(merchant -> new RestaurantIFoodMerchantDTO(merchant))
+				.collect(Collectors.toSet());
+	}
+
+	public Object addRestaurantIFoodMerchant(RestaurantEntity restaurant, String merchantName, String merchantId) {
+
+		if (restaurant == null)
+			return "You need to enter a valid restaurant";
+
+		if (merchantName == null || merchantName.isEmpty())
+			return "You need to enter a valid merchantName";
+
+		if (merchantId == null || merchantId.isEmpty())
+			return "You need to enter a valid merchantId";
+
+		if (restaurant.getIFoodMerchants().stream()
+				.filter(merchant -> merchant.getMerchantId().equalsIgnoreCase(merchantId)).findFirst().isPresent())
+			return "This merchantId is already added in this restaurant";
+
+		restaurant.getIFoodMerchants().add(this.restaurantIFoodMerchantRepository
+				.saveAndFlush(new RestaurantIFoodMerchantEntity(null, restaurant, merchantName, merchantId)));
+
+		return this.restaurantRepository.saveAndFlush(restaurant);
+	}
+
+	public Object deleteRestaurantIFoodMerchant(RestaurantEntity restaurant, String merchantId) {
+
+		if (restaurant == null)
+			return "You need to enter a valid restaurant";
+
+		if (merchantId == null || merchantId.isEmpty())
+			return "You need to enter a valid merchantId";
+
+		RestaurantIFoodMerchantEntity restaurantIFoodMerchantEntity = restaurant.getIFoodMerchants().stream()
+				.filter(merchant -> merchant.getMerchantId().equalsIgnoreCase(merchantId)).findFirst().orElse(null);
+
+		if (restaurantIFoodMerchantEntity == null)
+			return "This merchantId is not added to this restaurant";
+
+		this.restaurantIFoodMerchantRepository.deleteById(restaurantIFoodMerchantEntity.getId());
+		this.restaurantIFoodMerchantRepository.flush();
+
+		restaurant.setIFoodMerchants(restaurant.getIFoodMerchants().stream()
+				.filter(merchant -> !merchant.getMerchantId().equalsIgnoreCase(merchantId))
+				.collect(Collectors.toSet()));
 
 		return this.restaurantRepository.saveAndFlush(restaurant);
 	}
