@@ -1,5 +1,7 @@
 package com.github.theprogmatheus.zonadelivery.server.util;
 
+import java.util.UUID;
+
 public class StringUtils {
 
 	public static String generateRandomString(String chars, int size) {
@@ -10,5 +12,13 @@ public class StringUtils {
 				stringBuilder.append(chars.charAt(Utils.RANDOM.nextInt(chars.length())));
 		}
 		return stringBuilder.toString();
+	}
+
+	public static UUID getUUIDFromString(String uuidString) {
+		try {
+			return UUID.fromString(uuidString);
+		} catch (Exception exception) {
+			return null;
+		}
 	}
 }

@@ -48,6 +48,50 @@ public class RestaurantService {
 		return this.restaurantRepository.saveAndFlush(new RestaurantEntity(null, nameId, name, owner, null, null));
 	}
 
+	public Object changeRestaurantNameId(RestaurantEntity restaurant, String newNameId) {
+
+		if (restaurant == null)
+			return "You need to enter a valid restaurant";
+
+		if (newNameId == null || newNameId.isEmpty())
+			return "You need to enter a valid nameId";
+
+		newNameId = Utils.SLUGIFY.slugify(newNameId);
+
+		if (getRestaurantByNameId(newNameId) != null)
+			return "This nameId: '" + newNameId + "', is already used, choose another nameId";
+
+		restaurant.setNameId(newNameId);
+
+		return this.restaurantRepository.saveAndFlush(restaurant);
+	}
+
+	public Object changeRestaurantDisplayName(RestaurantEntity restaurant, String newDisplayName) {
+
+		if (restaurant == null)
+			return "You need to enter a valid restaurant";
+
+		if (newDisplayName == null || newDisplayName.isEmpty())
+			return "You need to enter a valid displayName";
+
+		restaurant.setDisplayName(newDisplayName);
+
+		return this.restaurantRepository.saveAndFlush(restaurant);
+	}
+
+	public Object changeRestaurantOwner(RestaurantEntity restaurant, UserEntity newOwner) {
+
+		if (restaurant == null)
+			return "You need to enter a valid restaurant";
+
+		if (newOwner == null)
+			return "You need to enter a valid ownerId";
+
+		restaurant.setOwner(newOwner);
+
+		return this.restaurantRepository.saveAndFlush(restaurant);
+	}
+
 	public String createNameIdByRestaurantName(String name) {
 		return Utils.SLUGIFY.slugify(name).concat("-").concat(UUID.randomUUID().toString().split("-")[0]);
 	}

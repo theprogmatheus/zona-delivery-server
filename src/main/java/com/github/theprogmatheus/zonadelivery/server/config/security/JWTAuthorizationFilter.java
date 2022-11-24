@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.repository.UserRepository;
 
@@ -48,20 +49,26 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	// the token
 	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
 
-		String header = request.getHeader(HEADER_STRING);
+		try {
+			String header = request.getHeader(HEADER_STRING);
 
-		if (header != null && header.startsWith(TOKEN_PREFIX)) {
+			if (header != null && header.startsWith(TOKEN_PREFIX)) {
 
-			// parse the token.
-			String userUuid = JWT.require(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes())).build()
-					.verify(header.replace(TOKEN_PREFIX, "")).getSubject();
-			if (userUuid != null) {
-				UserEntity user = this.userRepository.findById(UUID.fromString(userUuid)).orElse(null);
-				if (user != null)
-					return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+				// parse the token.
+				String userUuid = JWT.require(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes())).build()
+						.verify(header.replace(TOKEN_PREFIX, "")).getSubject();
+				if (userUuid != null) {
+					UserEntity user = this.userRepository.findById(UUID.fromString(userUuid)).orElse(null);
+					if (user != null)
+						return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+				}
+
+				return null;
 			}
 
-			return null;
+		} catch (TokenExpiredException exception) {
+			
+			// o token expirou :/
 		}
 
 		return null;
