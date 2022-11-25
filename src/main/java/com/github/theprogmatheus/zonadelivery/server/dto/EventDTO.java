@@ -19,6 +19,7 @@ public class EventDTO {
 
 	private UUID id;
 	private UUID restaurant;
+	private UUID order;
 	private EventType type;
 	private Date createdAt;
 	private Map<String, Object> metadata;
@@ -28,8 +29,10 @@ public class EventDTO {
 			if (eventEntity.getId() != null)
 				this.id = eventEntity.getId();
 
-			if (eventEntity.getRestaurant() != null)
-				this.restaurant = eventEntity.getRestaurant().getId();
+			if (eventEntity.getOrder() != null) {
+				this.order = eventEntity.getOrder().getId();
+				this.restaurant = eventEntity.getOrder().getRestaurant().getId();
+			}
 
 			if (eventEntity.getType() != null)
 				this.type = eventEntity.getType();

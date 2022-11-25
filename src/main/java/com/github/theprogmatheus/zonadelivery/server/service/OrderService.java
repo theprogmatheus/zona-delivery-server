@@ -106,7 +106,7 @@ public class OrderService {
 					deliveryDateTime, orderType, channel, customer, address, items, total, payment));
 
 			if (restaurantOrderEntity != null)
-				this.eventService.createNewEvent(restaurant, EventType.ORDER_CREATED, null);
+				this.eventService.createNewEvent(restaurantOrderEntity, EventType.PLACED, null);
 
 			return restaurantOrderEntity;
 		} catch (Exception exception) {

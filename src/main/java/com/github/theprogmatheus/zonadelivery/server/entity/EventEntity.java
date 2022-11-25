@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Type;
 
-import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
 import com.github.theprogmatheus.zonadelivery.server.enums.EventType;
 
 import lombok.AllArgsConstructor;
@@ -38,8 +38,8 @@ public class EventEntity {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "restaurant_id", nullable = false)
-	private RestaurantEntity restaurant;
+	@JoinColumn(name = "order_id", nullable = false)
+	private RestaurantOrderEntity order;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
