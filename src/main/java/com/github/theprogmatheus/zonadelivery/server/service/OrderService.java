@@ -16,6 +16,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.Res
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPayment;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPaymentMethod;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderTotal;
+import com.github.theprogmatheus.zonadelivery.server.enums.EventType;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItemOption;
@@ -24,6 +25,9 @@ import com.github.theprogmatheus.zonadelivery.server.util.StringUtils;
 
 @Service
 public class OrderService {
+
+	@Autowired
+	private EventService eventService;
 
 	@Autowired
 	private OrderRepository orderRepository;
@@ -96,9 +100,18 @@ public class OrderService {
 			RestaurantCustomerAddressEntity address, List<RestaurantOrderItem> items, RestaurantOrderTotal total,
 			RestaurantOrderPayment payment) {
 
-		return this.orderRepository.saveAndFlush(new RestaurantOrderEntity(null, restaurant, new Date(),
-				(simpleId != null ? simpleId : generateOrderSimpleId()), deliveryDateTime, orderType, channel, customer,
-				address, items, total, payment));
+		try {
+			RestaurantOrderEntity restaurantOrderEntity = this.orderRepository.saveAndFlush(new RestaurantOrderEntity(
+					null, restaurant, new Date(), (simpleId != null ? simpleId : generateOrderSimpleId()),
+					deliveryDateTime, orderType, channel, customer, address, items, total, payment));
+
+			if (restaurantOrderEntity != null)
+				this.eventService.createNewEvent(restaurant, EventType.ORDER_CREATED, null);
+
+			return restaurantOrderEntity;
+		} catch (Exception exception) {
+			return null;
+		}
 	}
 
 	public String generateOrderSimpleId() {
