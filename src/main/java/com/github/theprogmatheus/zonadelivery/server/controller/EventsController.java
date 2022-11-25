@@ -20,7 +20,7 @@ import com.github.theprogmatheus.zonadelivery.server.service.EventService;
 
 @SuppressWarnings({ "unchecked" })
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/event")
 public class EventsController {
 
 	@Autowired

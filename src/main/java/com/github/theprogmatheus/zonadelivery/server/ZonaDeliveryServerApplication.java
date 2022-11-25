@@ -11,5 +11,4 @@ public class ZonaDeliveryServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ZonaDeliveryServerApplication.class, args);
 	}
-
 }
