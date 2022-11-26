@@ -19,6 +19,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.Res
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPaymentMethod;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderTotal;
 import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
+import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItemOption;
@@ -104,7 +105,7 @@ public class OrderService {
 									paymentPethod.isPrepaid(), paymentPethod.getCash(), paymentPethod.getCard());
 						}).collect(Collectors.toList()));
 
-				result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getDisplayId(), null,
+				result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getId(), ifoodOrder.getDisplayId(), null,
 						ifoodOrder.getOrderType(), customer.getId(), address.getId(), items, total, payment);
 
 				if (result instanceof RestaurantOrderEntity)
@@ -115,7 +116,7 @@ public class OrderService {
 	}
 
 	// fazer um novo pedido
-	public Object placeOrder(UUID restaurantId, String channel, String simpleId, Date deliveryDateTime,
+	public Object placeOrder(UUID restaurantId, String channel, String ifoodId, String simpleId, Date deliveryDateTime,
 			String orderType, UUID customerId, UUID addressId, List<RestaurantOrderItem> items,
 			RestaurantOrderTotal total, RestaurantOrderPayment payment) {
 
@@ -163,7 +164,7 @@ public class OrderService {
 
 		RestaurantOrderEntity restaurantOrderEntity = this.orderRepository
 				.saveAndFlush(new RestaurantOrderEntity(null, restaurant, new Date(), simpleId, deliveryDateTime,
-						orderType, channel, customer, address, items, total, payment, OrderStatus.PLACED));
+						orderType, channel, ifoodId, customer, address, items, total, payment, OrderStatus.PLACED));
 
 		if (restaurantOrderEntity != null)
 			this.eventService.createNewEvent(restaurantOrderEntity, OrderStatus.PLACED, null);
@@ -172,6 +173,16 @@ public class OrderService {
 	}
 
 	public Object acceptOrder(UUID orderId) {
+
+		if (orderId == null)
+			return "The orderId is not valid";
+		RestaurantOrderEntity order = getOrderById(orderId);
+		if (order == null)
+			return "Order not found";
+
+		if (order.getChannel().equals("IFOOD") && order.getIfoodId() != null || !order.getIfoodId().isEmpty())
+			IFoodAPI.confirmOrder(order.getIfoodId());
+
 		return changeOrderStatus(orderId, OrderStatus.CONFIRMED);
 	}
 
@@ -180,6 +191,16 @@ public class OrderService {
 	}
 
 	public Object dispatchOrder(UUID orderId) {
+
+		if (orderId == null)
+			return "The orderId is not valid";
+		RestaurantOrderEntity order = getOrderById(orderId);
+		if (order == null)
+			return "Order not found";
+
+		if (order.getChannel().equals("IFOOD") && order.getIfoodId() != null || !order.getIfoodId().isEmpty())
+			IFoodAPI.dispatchOrder(order.getIfoodId());
+
 		return changeOrderStatus(orderId, OrderStatus.DISPATCHED);
 	}
 

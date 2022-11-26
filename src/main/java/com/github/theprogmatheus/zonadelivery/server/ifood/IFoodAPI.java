@@ -78,6 +78,22 @@ public class IFoodAPI {
 
 	}
 
+	public static void confirmOrder(String orderId) {
+
+		try {
+
+			RestTemplate restTemplate = new RestTemplate();
+			IFoodEndPoints endPoint = IFoodEndPoints.ORDER_CONFIRM;
+			HttpEntity<String> httpEntity = new HttpEntity<String>(createHeaders());
+
+			restTemplate.exchange(endPoint.createUrl(orderId), endPoint.getMethod(), httpEntity, Object.class);
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+
+	}
+
 	public static IFoodHandshakeConfirmResponse confirmCode(IFoodOrderHandshakeCode handshakeCode) {
 
 		try {
@@ -196,6 +212,14 @@ public class IFoodAPI {
 		EVENTS_ACKNOW("/order/v1.0/events/acknowledgment", HttpMethod.POST),
 		ORDER_DETAILS("/order/v1.0/orders/{{0}}", HttpMethod.GET),
 		ORDER_DISPATCH("/order/v1.0/orders/{{0}}/dispatch", HttpMethod.POST),
+		ORDER_CONFIRM("/order/v1.0/orders/{{0}}/confirm", HttpMethod.POST),
+		ORDER_START_PREPARATION("/order/v1.0/orders/{{0}}/startPreparation", HttpMethod.POST),
+		ORDER_READY_TO_PICKUP("/order/v1.0/orders/{{0}}/readyToPickup", HttpMethod.POST),
+		ORDER_REQUEST_CANCELLATION("/order/v1.0/orders/{{0}}/requestCancellation", HttpMethod.POST),
+		ORDER_ACCEPT_CANCELLATION("/order/v1.0/orders/{{0}}/acceptCancellation", HttpMethod.POST),
+		ORDER_DENY_CANCELLATION("/order/v1.0/orders/{{0}}/denyCancellation", HttpMethod.POST),
+		ORDER_REQUEST_DRIVER("/order/v1.0/orders/{{0}}/requestDriver", HttpMethod.POST),
+
 		HANDSHAKE_CONFIRM("/marketplace-delivery-handshake/confirm", HttpMethod.POST),
 		LIST_MERCHANTS("/merchant/v1.0/merchants", HttpMethod.GET),
 		MERCHANT_DETAILS("/merchant/v1.0/merchants/{{0}}", HttpMethod.GET),

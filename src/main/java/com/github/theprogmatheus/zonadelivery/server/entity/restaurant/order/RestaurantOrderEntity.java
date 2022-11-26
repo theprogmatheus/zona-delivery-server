@@ -66,6 +66,9 @@ public class RestaurantOrderEntity {
 	@Column(columnDefinition = "VARCHAR(128)", nullable = false)
 	private String channel;
 
+	@Column(columnDefinition = "VARCHAR(128)")
+	private String ifoodId;
+
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
 	private RestaurantCustomerEntity customer;
