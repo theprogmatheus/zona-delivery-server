@@ -180,6 +180,15 @@ public class RestaurantCustomerService {
 		return "success";
 	}
 
+	public Object listCustomerAddresses(UUID customerId) {
+
+		if (customerId == null)
+			return "The customerId is not valid";
+
+		return this.addressRepository.findAll().stream()
+				.filter(address -> address.getCustomer().getId().equals(customerId)).collect(Collectors.toList());
+	}
+
 	public Object deleteCustomer(UUID customerId) {
 		if (customerId == null)
 			return "The customerId is not valid";
