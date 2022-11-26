@@ -14,7 +14,6 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.Rest
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuItemEntity;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantIfoodMerchantRepository;
-import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuAditionalRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuCategoryRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuItemRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuRepository;
@@ -38,9 +37,6 @@ public class RestaurantService {
 
 	@Autowired
 	private RestaurantMenuItemRepository restaurantMenuItemRepository;
-
-	@Autowired
-	private RestaurantMenuAditionalRepository restaurantMenuItemAditionalRepository;
 
 	public RestaurantEntity getRestaurantByIFoodMerchantId(String iFoodMerchantId) {
 

@@ -33,7 +33,7 @@ public class OrderService {
 	private OrderRepository orderRepository;
 
 	@Autowired
-	private CustomerService customerService;
+	private RestaurantCustomerService customerService;
 
 	@Autowired
 	private RestaurantService restaurantService;
@@ -51,13 +51,27 @@ public class OrderService {
 						.getCustomeByIfoodCustomerId(ifoodOrder.getCustomer().getId());
 
 				// caso o banco de dados não tenha este cliente ainda, vamos cadastra-lo...
+				if (customer == null) {
+					Object result = this.customerService.createNewCustomerByIFoodOrderCustomer(restaurant.getId(),
+							ifoodOrder.getCustomer());
+
+					if (result instanceof RestaurantCustomerEntity)
+						customer = (RestaurantCustomerEntity) result;
+				}
+
 				if (customer == null)
-					customer = this.customerService.createNewCustomerByIFoodOrderCustomer(ifoodOrder.getCustomer());
+					return null;
 
 				// precisamos resgatar/registrar o endereço fornecido pelo ifood
-				RestaurantCustomerAddressEntity address = this.customerService
-						.addNewCustomerAddressByIFoodOrderDeliveryAddress(customer,
-								ifoodOrder.getDelivery().getDeliveryAddress());
+				RestaurantCustomerAddressEntity address = null;
+				Object result = this.customerService.addNewCustomerAddressByIFoodOrderDeliveryAddress(customer.getId(),
+						ifoodOrder.getDelivery().getDeliveryAddress());
+
+				if (result instanceof RestaurantCustomerAddressEntity)
+					address = (RestaurantCustomerAddressEntity) result;
+
+				if (address == null)
+					return null;
 
 				// vamos listar os itens do pedido
 				List<RestaurantOrderItem> items = new ArrayList<>();
