@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import org.hibernate.annotations.Type;
 
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,7 +52,10 @@ public class RestaurantCustomerEntity {
 	@Column(columnDefinition = "VARCHAR(128)")
 	private String phone;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "customer")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
 	private Set<RestaurantCustomerAddressEntity> addresses;
+	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
+	private Set<RestaurantOrderEntity> orders;
 
 }

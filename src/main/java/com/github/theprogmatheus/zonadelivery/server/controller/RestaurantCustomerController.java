@@ -1,7 +1,9 @@
 package com.github.theprogmatheus.zonadelivery.server.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantCustomerAddressDTO;
+import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantCustomerDTO;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerAddressEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
 import com.github.theprogmatheus.zonadelivery.server.service.RestaurantCustomerService;
 import com.github.theprogmatheus.zonadelivery.server.util.StringUtils;
 
+@SuppressWarnings("unchecked")
 @RestController
 @RequestMapping("/restaurant/{restaurantId}/customer")
 public class RestaurantCustomerController {
@@ -28,7 +34,14 @@ public class RestaurantCustomerController {
 	@GetMapping("/list")
 	public Object list(@PathVariable UUID restaurantId) {
 		try {
-			return ResponseEntity.ok(this.customerService.listCustomers(restaurantId));
+
+			Object result = this.customerService.listCustomers(restaurantId);
+
+			if (result instanceof String)
+				return ResponseEntity.ok(result);
+
+			return ResponseEntity.ok(((List<RestaurantCustomerEntity>) result).stream()
+					.map(customer -> new RestaurantCustomerDTO(customer)).collect(Collectors.toList()));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -39,7 +52,7 @@ public class RestaurantCustomerController {
 		try {
 			RestaurantCustomerEntity customer = this.customerService.getCustomerById(customerId);
 			if (customer != null)
-				return ResponseEntity.ok(customer);
+				return ResponseEntity.ok(new RestaurantCustomerDTO(customer));
 			else
 				return ResponseEntity.ok("Customer not found");
 		} catch (Exception exception) {
@@ -57,7 +70,8 @@ public class RestaurantCustomerController {
 			if (result instanceof String)
 				return ResponseEntity.ok(result);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new RestaurantCustomerDTO((RestaurantCustomerEntity) result));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -72,7 +86,8 @@ public class RestaurantCustomerController {
 			if (result instanceof String)
 				return ResponseEntity.ok(result);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new RestaurantCustomerDTO((RestaurantCustomerEntity) result));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -87,7 +102,8 @@ public class RestaurantCustomerController {
 			if (result instanceof String)
 				return ResponseEntity.ok(result);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new RestaurantCustomerDTO((RestaurantCustomerEntity) result));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -97,12 +113,13 @@ public class RestaurantCustomerController {
 	public Object changeWhatsappId(@PathVariable UUID restaurantId, @PathVariable UUID customerId,
 			@RequestBody Map<String, String> body) {
 		try {
-			Object result = this.customerService.changeCustomerWhatsAppId(customerId, body.get("whatsapp_id"));
+			Object result = this.customerService.changeCustomerWhatsAppId(customerId, body.get("whatsappId"));
 
 			if (result instanceof String)
 				return ResponseEntity.ok(result);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new RestaurantCustomerDTO((RestaurantCustomerEntity) result));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -117,7 +134,8 @@ public class RestaurantCustomerController {
 			if (result instanceof String)
 				return ResponseEntity.ok(result);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new RestaurantCustomerDTO((RestaurantCustomerEntity) result));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -126,7 +144,13 @@ public class RestaurantCustomerController {
 	@GetMapping("/{customerId}/addresses")
 	public Object addresses(@PathVariable UUID restaurantId, @PathVariable UUID customerId) {
 		try {
-			return ResponseEntity.ok(this.customerService.listCustomerAddresses(customerId));
+			Object result = this.customerService.listCustomerAddresses(customerId);
+
+			if (result instanceof String)
+				return ResponseEntity.ok(result);
+
+			return ResponseEntity.ok(((List<RestaurantCustomerAddressEntity>) result).stream()
+					.map(address -> new RestaurantCustomerAddressDTO(address)).collect(Collectors.toList()));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -155,7 +179,8 @@ public class RestaurantCustomerController {
 			if (result instanceof String)
 				return ResponseEntity.ok(result);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new RestaurantCustomerAddressDTO((RestaurantCustomerAddressEntity) result));
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -178,6 +203,7 @@ public class RestaurantCustomerController {
 			Object result = this.customerService.deleteCustomer(StringUtils.getUUIDFromString(body.get("customer")));
 			return ResponseEntity.ok(result);
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
 	}

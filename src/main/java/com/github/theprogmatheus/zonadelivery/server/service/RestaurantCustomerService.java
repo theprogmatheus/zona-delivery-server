@@ -36,7 +36,7 @@ public class RestaurantCustomerService {
 			return "The restaurantId is not valid";
 
 		return this.customerRepository.findAll().stream()
-				.filter(customer -> customer.getRestaurant().getId().equals(restaurantId)).collect(Collectors.toList());
+				.filter(customer -> restaurantId.equals(customer.getRestaurant().getId())).collect(Collectors.toList());
 	}
 
 	public Object createNewCustomerByIFoodOrderCustomer(UUID restaurantId, IFoodOrderCustomer iFoodCustomer) {
@@ -54,8 +54,8 @@ public class RestaurantCustomerService {
 		if (restaurant == null)
 			return "Restaurant not found";
 
-		return this.customerRepository
-				.saveAndFlush(new RestaurantCustomerEntity(null, restaurant, name, ifoodId, whatsappId, phone, null));
+		return this.customerRepository.saveAndFlush(
+				new RestaurantCustomerEntity(null, restaurant, name, ifoodId, whatsappId, phone, null, null));
 	}
 
 	public Object changeCustomerName(UUID customerId, String name) {
