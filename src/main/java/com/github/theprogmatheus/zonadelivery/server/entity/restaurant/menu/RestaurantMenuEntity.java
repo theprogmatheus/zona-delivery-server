@@ -42,7 +42,7 @@ public class RestaurantMenuEntity {
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
 	private String name;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu", orphanRemoval = true)
 	private Set<RestaurantMenuCategoryEntity> categories;
 	
 }

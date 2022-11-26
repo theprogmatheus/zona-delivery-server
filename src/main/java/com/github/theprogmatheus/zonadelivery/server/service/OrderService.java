@@ -3,6 +3,8 @@ package com.github.theprogmatheus.zonadelivery.server.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.Res
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPayment;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPaymentMethod;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderTotal;
-import com.github.theprogmatheus.zonadelivery.server.enums.EventType;
+import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItemOption;
@@ -102,30 +104,116 @@ public class OrderService {
 									paymentPethod.isPrepaid(), paymentPethod.getCash(), paymentPethod.getCard());
 						}).collect(Collectors.toList()));
 
-				return createNewOrder(restaurant, "IFOOD", ifoodOrder.getDisplayId(), null, ifoodOrder.getOrderType(),
-						customer, address, items, total, payment);
+				result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getDisplayId(), null,
+						ifoodOrder.getOrderType(), customer.getId(), address.getId(), items, total, payment);
+
+				if (result instanceof RestaurantOrderEntity)
+					return (RestaurantOrderEntity) result;
 			}
 		}
 		return null;
 	}
 
-	public RestaurantOrderEntity createNewOrder(RestaurantEntity restaurant, String channel, String simpleId,
-			Date deliveryDateTime, String orderType, RestaurantCustomerEntity customer,
-			RestaurantCustomerAddressEntity address, List<RestaurantOrderItem> items, RestaurantOrderTotal total,
-			RestaurantOrderPayment payment) {
+	// fazer um novo pedido
+	public Object placeOrder(UUID restaurantId, String channel, String simpleId, Date deliveryDateTime,
+			String orderType, UUID customerId, UUID addressId, List<RestaurantOrderItem> items,
+			RestaurantOrderTotal total, RestaurantOrderPayment payment) {
 
-		try {
-			RestaurantOrderEntity restaurantOrderEntity = this.orderRepository.saveAndFlush(new RestaurantOrderEntity(
-					null, restaurant, new Date(), (simpleId != null ? simpleId : generateOrderSimpleId()),
-					deliveryDateTime, orderType, channel, customer, address, items, total, payment));
+		if (restaurantId == null)
+			return "The restaurantId is not valid";
 
-			if (restaurantOrderEntity != null)
-				this.eventService.createNewEvent(restaurantOrderEntity, EventType.PLACED, null);
+		if (channel == null || channel.isEmpty())
+			return "The channelId is not valid";
 
-			return restaurantOrderEntity;
-		} catch (Exception exception) {
-			return null;
-		}
+		if (simpleId == null || simpleId.isEmpty())
+			simpleId = generateOrderSimpleId();
+
+		if (deliveryDateTime == null)
+			deliveryDateTime = new Date(System.currentTimeMillis() + 2_700_000L); // 45 minutos
+
+		if (orderType == null || orderType.isEmpty())
+			return "The orderType is not valid";
+
+		if (customerId == null)
+			return "The customerId is not valid";
+
+		if (addressId == null)
+			return "The addressId is not valid";
+
+		if (items == null || items.isEmpty())
+			return "The items is not valid";
+
+		if (total == null)
+			return "The total is not valid";
+
+		if (payment == null)
+			return "The payment is not valid";
+
+		RestaurantEntity restaurant = this.restaurantService.getRestaurantById(restaurantId);
+		if (restaurant == null)
+			return "Restaurant is not valid";
+
+		RestaurantCustomerEntity customer = this.customerService.getCustomerById(customerId);
+		if (customer == null)
+			return "Customer is not valid";
+
+		RestaurantCustomerAddressEntity address = this.customerService.getAddressById(addressId);
+		if (address == null)
+			return "Address is not valid";
+
+		RestaurantOrderEntity restaurantOrderEntity = this.orderRepository
+				.saveAndFlush(new RestaurantOrderEntity(null, restaurant, new Date(), simpleId, deliveryDateTime,
+						orderType, channel, customer, address, items, total, payment, OrderStatus.PLACED));
+
+		if (restaurantOrderEntity != null)
+			this.eventService.createNewEvent(restaurantOrderEntity, OrderStatus.PLACED, null);
+
+		return restaurantOrderEntity;
+	}
+
+	public Object acceptOrder(UUID orderId) {
+		return changeOrderStatus(orderId, OrderStatus.CONFIRMED);
+	}
+
+	public Object cancelOrder(UUID orderId) {
+		return changeOrderStatus(orderId, OrderStatus.CANCELLED);
+	}
+
+	public Object dispatchOrder(UUID orderId) {
+		return changeOrderStatus(orderId, OrderStatus.DISPATCHED);
+	}
+
+	public Object readyToPickupOrder(UUID orderId) {
+		return changeOrderStatus(orderId, OrderStatus.READY_TO_PICKUP);
+	}
+
+	public Object finishOrder(UUID orderId) {
+		return changeOrderStatus(orderId, OrderStatus.CONCLUDED);
+	}
+
+	public Object changeOrderStatus(UUID orderId, OrderStatus status) {
+		return changeOrderStatus(orderId, status, null);
+	}
+
+	public Object changeOrderStatus(UUID orderId, OrderStatus status, Map<String, Object> metadata) {
+
+		if (orderId == null)
+			return "The orderId is not valid";
+		if (status == null)
+			return "The status is not valid";
+
+		RestaurantOrderEntity order = getOrderById(orderId);
+		if (order == null)
+			return "Order not found";
+
+		// emit event
+		Object result = this.eventService.createNewEvent(order, status, metadata);
+		if (result instanceof String)
+			return result;
+
+		order.setStatus(status);
+
+		return this.orderRepository.saveAndFlush(order);
 	}
 
 	public String generateOrderSimpleId() {
@@ -138,6 +226,12 @@ public class OrderService {
 
 	public OrderRepository getRepository() {
 		return orderRepository;
+	}
+
+	public RestaurantOrderEntity getOrderById(UUID orderId) {
+		if (orderId == null)
+			return null;
+		return this.orderRepository.findById(orderId).orElse(null);
 	}
 
 }

@@ -7,7 +7,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.theprogmatheus.zonadelivery.server.entity.EventEntity;
-import com.github.theprogmatheus.zonadelivery.server.enums.EventType;
+import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ public class EventDTO {
 	private UUID id;
 	private UUID restaurant;
 	private UUID order;
-	private EventType type;
+	private OrderStatus status;
 	private Date createdAt;
 	private Map<String, Object> metadata;
 
@@ -34,8 +34,8 @@ public class EventDTO {
 				this.restaurant = eventEntity.getOrder().getRestaurant().getId();
 			}
 
-			if (eventEntity.getType() != null)
-				this.type = eventEntity.getType();
+			if (eventEntity.getStatus() != null)
+				this.status = eventEntity.getStatus();
 
 			if (eventEntity.getCreatedAt() != null)
 				this.createdAt = eventEntity.getCreatedAt();

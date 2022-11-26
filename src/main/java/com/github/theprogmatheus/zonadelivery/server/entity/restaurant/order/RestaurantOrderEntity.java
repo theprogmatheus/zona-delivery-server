@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerAddressEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 
 import lombok.AllArgsConstructor;
@@ -80,6 +83,10 @@ public class RestaurantOrderEntity {
 
 	@Embedded
 	private RestaurantOrderPayment payment;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private OrderStatus status;
 
 	@JsonInclude(Include.NON_NULL)
 	@Data

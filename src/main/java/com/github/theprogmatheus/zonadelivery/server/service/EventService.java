@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.github.theprogmatheus.zonadelivery.server.entity.EventEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
-import com.github.theprogmatheus.zonadelivery.server.enums.EventType;
+import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 import com.github.theprogmatheus.zonadelivery.server.repository.EventRepository;
 
 @Service
@@ -24,7 +24,7 @@ public class EventService {
 	@Autowired
 	private EventRepository eventRepository;
 
-	public Object createNewEvent(RestaurantOrderEntity order, EventType type, Map<String, Object> metadata) {
+	public Object createNewEvent(RestaurantOrderEntity order, OrderStatus type, Map<String, Object> metadata) {
 
 		if (order == null)
 			return "order is null";

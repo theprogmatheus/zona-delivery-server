@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
 
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
-import com.github.theprogmatheus.zonadelivery.server.enums.EventType;
+import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,7 +43,7 @@ public class EventEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private EventType type;
+	private OrderStatus status;
 
 	@Column(nullable = false)
 	private Date createdAt;
