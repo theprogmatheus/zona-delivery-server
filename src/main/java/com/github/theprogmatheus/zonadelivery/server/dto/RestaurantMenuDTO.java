@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class RestaurantMenuDTO {
 
 	private UUID id;
-	private RestaurantDTO restaurant;
+	private UUID restaurant;
 	private String name;
 	private Set<RestaurantMenuCategoryDTO> categories;
 
@@ -27,7 +27,7 @@ public class RestaurantMenuDTO {
 			this.id = restaurantMenuEntity.getId();
 
 		if (restaurantMenuEntity.getRestaurant() != null)
-			this.restaurant = new RestaurantDTO(restaurantMenuEntity.getRestaurant());
+			this.restaurant = restaurantMenuEntity.getRestaurant().getId();
 
 		if (restaurantMenuEntity.getName() != null)
 			this.name = restaurantMenuEntity.getName();

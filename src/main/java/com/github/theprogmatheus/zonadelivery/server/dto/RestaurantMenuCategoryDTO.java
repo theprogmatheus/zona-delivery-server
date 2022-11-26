@@ -34,7 +34,9 @@ public class RestaurantMenuCategoryDTO {
 
 			if (restaurantMenuCategoryEntity.getItems() != null)
 				this.items = restaurantMenuCategoryEntity.getItems().stream().map(item -> {
-					item.setCategory(null);
+
+					item.setCategories(null);
+
 					return new RestaurantMenuItemDTO(item);
 				}).collect(Collectors.toSet());
 		}

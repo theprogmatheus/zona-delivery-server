@@ -1,6 +1,8 @@
 package com.github.theprogmatheus.zonadelivery.server.dto;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class RestaurantMenuAditionalDTO {
 
 	private UUID id;
-	private RestaurantMenuItemDTO item;
+	private Set<RestaurantMenuItemDTO> items;
 	private String name;
 	private double price;
 
@@ -25,8 +27,11 @@ public class RestaurantMenuAditionalDTO {
 			if (restaurantMenuAditionalEntity.getId() != null)
 				this.id = restaurantMenuAditionalEntity.getId();
 
-			if (restaurantMenuAditionalEntity.getItem() != null)
-				this.item = new RestaurantMenuItemDTO(restaurantMenuAditionalEntity.getItem());
+			if (restaurantMenuAditionalEntity.getItems() != null)
+				this.items = restaurantMenuAditionalEntity.getItems().stream().map(item -> {
+					item.setAditionals(null);
+					return new RestaurantMenuItemDTO(item);
+				}).collect(Collectors.toSet());
 
 			if (restaurantMenuAditionalEntity.getName() != null)
 				this.name = restaurantMenuAditionalEntity.getName();

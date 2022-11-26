@@ -17,12 +17,16 @@ import org.hibernate.annotations.Type;
 
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "restaurant_menus")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class RestaurantMenuEntity {
 
 	@Id
@@ -40,5 +44,5 @@ public class RestaurantMenuEntity {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu")
 	private Set<RestaurantMenuCategoryEntity> categories;
-
+	
 }

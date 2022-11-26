@@ -107,7 +107,7 @@ public class RestaurantController {
 					.getRestaurantIFoodMerchants(this.restaurantService.getRestaurantById(restaurantId));
 
 			if (result instanceof Set)
-				return ResponseEntity.status(HttpStatus.CREATED).body(result);
+				return ResponseEntity.status(HttpStatus.OK).body(result);
 
 			return ResponseEntity.ok(result);
 

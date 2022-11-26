@@ -21,4 +21,12 @@ public class StringUtils {
 			return null;
 		}
 	}
+
+	public static double getDoubleFromString(String doubleString) {
+		try {
+			return Double.parseDouble(doubleString);
+		} catch (Exception exception) {
+			return -1;
+		}
+	}
 }

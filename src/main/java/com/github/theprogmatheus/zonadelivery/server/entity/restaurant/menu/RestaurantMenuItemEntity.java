@@ -10,17 +10,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "restaurant_menu_items")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class RestaurantMenuItemEntity {
 
 	@Id
@@ -30,8 +35,11 @@ public class RestaurantMenuItemEntity {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "category_id")
-	private RestaurantMenuCategoryEntity category;
+	@JoinColumn(name = "menu_id")
+	private RestaurantMenuEntity menu;
+
+	@ManyToMany(mappedBy = "items")
+	private Set<RestaurantMenuCategoryEntity> categories;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
 	private String name;
@@ -39,6 +47,8 @@ public class RestaurantMenuItemEntity {
 	@Column(nullable = false)
 	private double price;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "item")
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "restaurant_menu_items_aditionals", joinColumns = {
+			@JoinColumn(name = "item_id") }, inverseJoinColumns = { @JoinColumn(name = "aditional_id") })
 	private Set<RestaurantMenuAditionalEntity> aditionals;
 }

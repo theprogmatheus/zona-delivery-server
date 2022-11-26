@@ -10,17 +10,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "restaurant_menu_categories")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class RestaurantMenuCategoryEntity {
 
 	@Id
@@ -36,7 +41,9 @@ public class RestaurantMenuCategoryEntity {
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
 	private String name;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "restaurant_menu_categories_items", joinColumns = {
+			@JoinColumn(name = "category_id") }, inverseJoinColumns = { @JoinColumn(name = "item_id") })
 	private Set<RestaurantMenuItemEntity> items;
 
 }

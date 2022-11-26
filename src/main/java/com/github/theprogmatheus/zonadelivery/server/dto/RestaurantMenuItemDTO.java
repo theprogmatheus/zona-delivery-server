@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class RestaurantMenuItemDTO {
 
 	private UUID id;
-	private RestaurantMenuCategoryDTO category;
+	private Set<RestaurantMenuCategoryDTO> categories;
 	private String name;
 	private double price;
 	private Set<RestaurantMenuAditionalDTO> aditionals;
@@ -28,8 +28,11 @@ public class RestaurantMenuItemDTO {
 			if (restaurantMenuItemEntity.getId() != null)
 				this.id = restaurantMenuItemEntity.getId();
 
-			if (restaurantMenuItemEntity.getCategory() != null)
-				this.category = new RestaurantMenuCategoryDTO(restaurantMenuItemEntity.getCategory());
+			if (restaurantMenuItemEntity.getCategories() != null)
+				this.categories = restaurantMenuItemEntity.getCategories().stream().map(category -> {
+					category.setItems(null);
+					return new RestaurantMenuCategoryDTO(category);
+				}).collect(Collectors.toSet());
 
 			if (restaurantMenuItemEntity.getName() != null)
 				this.name = restaurantMenuItemEntity.getName();
@@ -38,7 +41,9 @@ public class RestaurantMenuItemDTO {
 
 			if (restaurantMenuItemEntity.getAditionals() != null)
 				this.aditionals = restaurantMenuItemEntity.getAditionals().stream().map(aditional -> {
-					aditional.setItem(null);
+
+					aditional.setItems(null);
+
 					return new RestaurantMenuAditionalDTO(aditional);
 				}).collect(Collectors.toSet());
 

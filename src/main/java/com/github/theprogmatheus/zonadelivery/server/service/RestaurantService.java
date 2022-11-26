@@ -10,7 +10,14 @@ import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantIFoodMerchant
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantIFoodMerchantEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuCategoryEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuItemEntity;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantIfoodMerchantRepository;
+import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuAditionalRepository;
+import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuCategoryRepository;
+import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuItemRepository;
+import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantRepository;
 import com.github.theprogmatheus.zonadelivery.server.util.Utils;
 
@@ -22,6 +29,18 @@ public class RestaurantService {
 
 	@Autowired
 	private RestaurantIfoodMerchantRepository restaurantIFoodMerchantRepository;
+
+	@Autowired
+	private RestaurantMenuRepository restaurantMenuRepository;
+
+	@Autowired
+	private RestaurantMenuCategoryRepository restaurantMenuCategoryRepository;
+
+	@Autowired
+	private RestaurantMenuItemRepository restaurantMenuItemRepository;
+
+	@Autowired
+	private RestaurantMenuAditionalRepository restaurantMenuItemAditionalRepository;
 
 	public RestaurantEntity getRestaurantByIFoodMerchantId(String iFoodMerchantId) {
 
@@ -148,6 +167,57 @@ public class RestaurantService {
 		return this.restaurantRepository.saveAndFlush(restaurant);
 	}
 
+	public Object getRestaurantMenus(RestaurantEntity restaurant) {
+
+		if (restaurant == null)
+			return "The restaurant is not valid";
+
+		return restaurant.getMenus();
+	}
+
+	public Object createNewRestaurantMenu(RestaurantEntity restaurant, String name) {
+		if (restaurant == null)
+			return "The restaurant is not valid";
+		if (name == null || name.isEmpty())
+			return "The name is not valid";
+
+		return this.restaurantMenuRepository.saveAndFlush(new RestaurantMenuEntity(null, restaurant, name, null));
+	}
+
+	public Object createNewRestaurantMenuCategory(RestaurantMenuEntity menu, String name) {
+
+		if (menu == null)
+			return "The menu is not valid";
+		if (name == null || name.isEmpty())
+			return "The name is not valid";
+
+		return this.restaurantMenuCategoryRepository
+				.saveAndFlush(new RestaurantMenuCategoryEntity(null, menu, name, null));
+	}
+
+	public Object createNewRestaurantMenuItem(RestaurantMenuCategoryEntity category, String name, double price) {
+
+		if (category == null)
+			return "The category is not valid";
+		if (name == null || name.isEmpty())
+			return "The name is not valid";
+		if (price < 0)
+			return "The price is not valid";
+
+		return null;
+	}
+
+	public Object createNewRestaurantMenuItemAditional(RestaurantMenuItemEntity item, String name, double price) {
+		if (item == null)
+			return "The item is not valid";
+		if (name == null || name.isEmpty())
+			return "The name is not valid";
+		if (price < 0)
+			return "The price is not valid";
+
+		return null;
+	}
+
 	public String createNameIdByRestaurantName(String name) {
 		return Utils.SLUGIFY.slugify(name).concat("-").concat(UUID.randomUUID().toString().split("-")[0]);
 	}
@@ -160,12 +230,32 @@ public class RestaurantService {
 		return this.restaurantRepository.findByNameId(nameId);
 	}
 
+	public RestaurantMenuEntity getRestaurantMenuById(UUID id) {
+		return this.restaurantMenuRepository.findById(id).orElse(null);
+	}
+
+	public RestaurantMenuCategoryEntity getRestaurantMenuCategoryEntityById(UUID id) {
+		return this.restaurantMenuCategoryRepository.findById(id).orElse(null);
+	}
+
 	public RestaurantRepository getRestaurantRepository() {
 		return restaurantRepository;
 	}
 
-	public RestaurantIfoodMerchantRepository getRestaurantIfoodMerchantRepository() {
+	public RestaurantIfoodMerchantRepository getRestaurantIFoodMerchantRepository() {
 		return restaurantIFoodMerchantRepository;
+	}
+
+	public RestaurantMenuRepository getRestaurantMenuRepository() {
+		return restaurantMenuRepository;
+	}
+
+	public RestaurantMenuCategoryRepository getRestaurantMenuCategoryRepository() {
+		return restaurantMenuCategoryRepository;
+	}
+
+	public RestaurantMenuItemRepository getRestaurantMenuItemRepository() {
+		return restaurantMenuItemRepository;
 	}
 
 }
