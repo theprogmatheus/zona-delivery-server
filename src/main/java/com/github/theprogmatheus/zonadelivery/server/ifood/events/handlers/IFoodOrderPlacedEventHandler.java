@@ -6,13 +6,12 @@ import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodEvent;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.service.OrderService;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class IFoodOrderPlacedEventHandler implements IFoodEventHandler {
 
 	private OrderService orderService;
-
-	public IFoodOrderPlacedEventHandler(OrderService orderService) {
-		this.orderService = orderService;
-	}
 
 	@Override
 	public boolean handle(IFoodEvent event) throws Exception {

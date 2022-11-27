@@ -26,6 +26,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.Restauran
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerAddressEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
 import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
+import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 
 import lombok.AllArgsConstructor;
@@ -66,9 +67,6 @@ public class RestaurantOrderEntity {
 	@Column(columnDefinition = "VARCHAR(128)", nullable = false)
 	private String channel;
 
-	@Column(columnDefinition = "VARCHAR(128)")
-	private String ifoodId;
-
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
 	private RestaurantCustomerEntity customer;
@@ -90,6 +88,10 @@ public class RestaurantOrderEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private OrderStatus status;
+
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	private IFoodOrderDetails ifoodOrder;
 
 	@JsonInclude(Include.NON_NULL)
 	@Data

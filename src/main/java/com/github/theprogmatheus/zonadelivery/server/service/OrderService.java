@@ -41,6 +41,22 @@ public class OrderService {
 	@Autowired
 	private RestaurantService restaurantService;
 
+	public List<RestaurantOrderEntity> listOrders(UUID restaurantId) {
+		return this.orderRepository.findAll().stream()
+				.filter(order -> order.getRestaurant().getId().equals(restaurantId)).collect(Collectors.toList());
+
+	}
+
+	public Object getOrder(UUID orderId) {
+		if (orderId == null)
+			return "The orderId is not valid";
+		RestaurantOrderEntity order = getOrderById(orderId);
+		if (order == null)
+			return "Order not found";
+
+		return order;
+	}
+
 	public RestaurantOrderEntity createNewOrderByIfoodOrder(IFoodOrderDetails ifoodOrder) {
 
 		if (ifoodOrder != null) {
@@ -162,9 +178,13 @@ public class OrderService {
 		if (address == null)
 			return "Address is not valid";
 
-		RestaurantOrderEntity restaurantOrderEntity = this.orderRepository
-				.saveAndFlush(new RestaurantOrderEntity(null, restaurant, new Date(), simpleId, deliveryDateTime,
-						orderType, channel, ifoodId, customer, address, items, total, payment, OrderStatus.PLACED));
+		IFoodOrderDetails iFoodOrderDetails = null;
+		if (ifoodId != null)
+			iFoodOrderDetails = IFoodAPI.getOrderDetails(ifoodId);
+
+		RestaurantOrderEntity restaurantOrderEntity = this.orderRepository.saveAndFlush(
+				new RestaurantOrderEntity(null, restaurant, new Date(), simpleId, deliveryDateTime, orderType, channel,
+						customer, address, items, total, payment, OrderStatus.PLACED, iFoodOrderDetails));
 
 		if (restaurantOrderEntity != null)
 			this.eventService.createNewEvent(restaurantOrderEntity, OrderStatus.PLACED, null);
@@ -180,8 +200,8 @@ public class OrderService {
 		if (order == null)
 			return "Order not found";
 
-		if (order.getChannel().equals("IFOOD") && order.getIfoodId() != null || !order.getIfoodId().isEmpty())
-			IFoodAPI.confirmOrder(order.getIfoodId());
+		if (order.getChannel().equals("IFOOD") && order.getIfoodOrder() != null)
+			IFoodAPI.confirmOrder(order.getIfoodOrder().getId());
 
 		return changeOrderStatus(orderId, OrderStatus.CONFIRMED);
 	}
@@ -198,8 +218,8 @@ public class OrderService {
 		if (order == null)
 			return "Order not found";
 
-		if (order.getChannel().equals("IFOOD") && order.getIfoodId() != null || !order.getIfoodId().isEmpty())
-			IFoodAPI.dispatchOrder(order.getIfoodId());
+		if (order.getChannel().equals("IFOOD") && order.getIfoodOrder() != null)
+			IFoodAPI.dispatchOrder(order.getIfoodOrder().getId());
 
 		return changeOrderStatus(orderId, OrderStatus.DISPATCHED);
 	}
@@ -255,4 +275,9 @@ public class OrderService {
 		return this.orderRepository.findById(orderId).orElse(null);
 	}
 
+	public RestaurantOrderEntity getOrderByIFoodId(String ifoodId) {
+		return this.orderRepository.findAll().stream()
+				.filter(order -> order.getIfoodOrder() != null && order.getIfoodOrder().getId().equals(ifoodId))
+				.findFirst().orElse(null);
+	}
 }

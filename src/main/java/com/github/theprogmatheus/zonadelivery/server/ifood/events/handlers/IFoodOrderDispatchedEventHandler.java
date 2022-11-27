@@ -1,45 +1,25 @@
 package com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers;
 
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 import com.github.theprogmatheus.zonadelivery.server.ifood.events.IFoodEventHandler;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodEvent;
+import com.github.theprogmatheus.zonadelivery.server.service.OrderService;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class IFoodOrderDispatchedEventHandler implements IFoodEventHandler {
 
+	private OrderService orderService;
 
-	/*
-	 * O pedido SÓ é adicionado ao banco de dados depois de despachado, para evitar
-	 * cancelamentos pelo cliente (requisitos ifood)
-	 */
 	@Override
 	public boolean handle(IFoodEvent event) throws Exception {
-		/*
-		String orderId = event.getOrderId();
-
-		IFoodOrderDetails orderDetails = IFoodAPI.getOrderDetails(orderId);
-		if (orderDetails != null) {
-
-			if (orderDetails.getDelivery().getDeliveredBy() == "IFOOD")
-				return true;
-
-			/*
-			 * Se esse pedido já foi adicionado, então ignore-o
-			 
-			if (this.orderRepository.findByOrderId(orderDetails.getId()) != null)
-				return true;
-
-			String displayId = orderDetails.getDisplayId();
-			String merchantId = event.getMerchantId();
-
-			OrderModel order = new OrderModel();
-
-			order.setOrderId(orderId);
-			order.setDisplayId(displayId);
-			order.setMerchantId(merchantId);
-			order.setOrderStatus(getEventName());
-
-			return this.orderRepository.saveAndFlush(order) != null;
-		}
-*/
+		
+		RestaurantOrderEntity order = this.orderService.getOrderByIFoodId(event.getOrderId());
+		if (order != null)
+			this.orderService.changeOrderStatus(order.getId(), OrderStatus.DISPATCHED);
+		
 		return true;
 	}
 

@@ -1,10 +1,12 @@
 package com.github.theprogmatheus.zonadelivery.server.controller;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +23,31 @@ import com.github.theprogmatheus.zonadelivery.server.service.OrderService;
 public class RestaurantOrderController {
 
 	@Autowired
-	private OrderService orderService;
+	private OrderService orderService; // /restaurant/{restaurantId}/order/list
+
+	@GetMapping("/list")
+	public Object list(@PathVariable UUID restaurantId) {
+		try {
+			return ResponseEntity.ok(this.orderService.listOrders(restaurantId).stream()
+					.map(order -> new RestaurantOrderDTO(order)).collect(Collectors.toList()));
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+		}
+	}
+
+	@GetMapping("/{orderId}")
+	public Object order(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
+		try {
+			Object result = this.orderService.getOrder(orderId);
+
+			if (result instanceof RestaurantOrderEntity)
+				return new RestaurantOrderDTO((RestaurantOrderEntity) result);
+
+			return ResponseEntity.ok(result);
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+		}
+	}
 
 	@PostMapping("/create")
 	public Object place(@PathVariable UUID restaurantId, @RequestBody RestaurantOrderInputDTO order) {

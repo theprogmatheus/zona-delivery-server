@@ -10,6 +10,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
+import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderCancelledEventHandler;
+import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderConcludedEventHandler;
+import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderConfirmedEventHandler;
+import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderDispatchedEventHandler;
 import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderPlacedEventHandler;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodEvent;
 import com.github.theprogmatheus.zonadelivery.server.service.OrderService;
@@ -29,6 +33,10 @@ public class IFoodEventsManager {
 		registeredEventHandlers = new HashMap<>();
 
 		// register events
+		registerEventHandler(new IFoodOrderCancelledEventHandler(this.orderService));
+		registerEventHandler(new IFoodOrderConcludedEventHandler(this.orderService));
+		registerEventHandler(new IFoodOrderConfirmedEventHandler(this.orderService));
+		registerEventHandler(new IFoodOrderDispatchedEventHandler(this.orderService));
 		registerEventHandler(new IFoodOrderPlacedEventHandler(this.orderService));
 	}
 
