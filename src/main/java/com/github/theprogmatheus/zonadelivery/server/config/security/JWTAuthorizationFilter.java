@@ -36,8 +36,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			throws IOException, ServletException {
 
 		String header = request.getHeader(HEADER_STRING);
-
-		if (header != null && header.startsWith(TOKEN_PREFIX)) {
+		if ((header != null && header.startsWith(TOKEN_PREFIX)) || (request.getParameter("access_token") != null)) {
 			UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
@@ -50,24 +49,29 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
 
 		try {
+			String accessToken;
+
 			String header = request.getHeader(HEADER_STRING);
+			if (header != null && header.startsWith(TOKEN_PREFIX))
+				accessToken = header.replace(TOKEN_PREFIX, "");
+			else
+				accessToken = request.getParameter("access_token");
 
-			if (header != null && header.startsWith(TOKEN_PREFIX)) {
+			if (accessToken != null && !accessToken.isBlank()) {
 
-				// parse the token.
 				String userUuid = JWT.require(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes())).build()
-						.verify(header.replace(TOKEN_PREFIX, "")).getSubject();
+						.verify(accessToken).getSubject();
+
 				if (userUuid != null) {
 					UserEntity user = this.userRepository.findById(UUID.fromString(userUuid)).orElse(null);
 					if (user != null)
 						return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 				}
 
-				return null;
 			}
-
+			return null;
 		} catch (TokenExpiredException exception) {
-			
+
 			// o token expirou :/
 		}
 

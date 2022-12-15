@@ -213,4 +213,8 @@ public class RestaurantCustomerService {
 	public RestaurantCustomerEntity getCustomeByIfoodCustomerId(String ifoodCustomerId) {
 		return this.customerRepository.findByIfoodCustomerId(ifoodCustomerId);
 	}
+
+	public RestaurantCustomerEntity getCustomeByWhatsappCustomerId(String whatsappCustomerId) {
+		return this.customerRepository.findByWhatsappCustomerId(whatsappCustomerId);
+	}
 }

@@ -50,6 +50,20 @@ public class RestaurantMenuController {
 		}
 	}
 
+	@GetMapping("/{menuId}")
+	public Object find(@PathVariable UUID restaurantId, @PathVariable UUID menuId) {
+		try {
+			RestaurantMenuEntity menu = this.menuService.getMenuById(menuId);
+
+			if (menu == null)
+				return ResponseEntity.ok("Menu not found");
+
+			return ResponseEntity.ok(new RestaurantMenuDTO(menu));
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+		}
+	}
+
 	@GetMapping("/{menuId}/categories")
 	public Object categories(@PathVariable UUID restaurantId, @PathVariable UUID menuId) {
 		try {

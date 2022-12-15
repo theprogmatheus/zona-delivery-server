@@ -39,6 +39,9 @@ public class SecurityConfiguration {
 				// libera todo o acesso ao /auth/login
 				.authorizeRequests().antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
 
+				// websocket
+				//.antMatchers("/ws/**").permitAll()
+
 				.antMatchers("/dashboard/**").hasAuthority("*")
 
 				// qualquer outro acesso tem que estar autenticado

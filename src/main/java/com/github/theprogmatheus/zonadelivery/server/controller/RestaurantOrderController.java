@@ -28,6 +28,16 @@ public class RestaurantOrderController {
 	@GetMapping("/list")
 	public Object list(@PathVariable UUID restaurantId) {
 		try {
+			return ResponseEntity.ok(this.orderService.listLastOrders(restaurantId).stream()
+					.map(order -> new RestaurantOrderDTO(order)).collect(Collectors.toList()));
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+		}
+	}
+
+	@GetMapping("/list/all")
+	public Object listAll(@PathVariable UUID restaurantId) {
+		try {
 			return ResponseEntity.ok(this.orderService.listOrders(restaurantId).stream()
 					.map(order -> new RestaurantOrderDTO(order)).collect(Collectors.toList()));
 		} catch (Exception exception) {

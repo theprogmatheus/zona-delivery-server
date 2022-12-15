@@ -29,6 +29,8 @@ import com.github.theprogmatheus.zonadelivery.server.util.StringUtils;
 @Service
 public class OrderService {
 
+	private static final long LAST_ORDER_TIME = 43_200_000;
+
 	@Autowired
 	private EventService eventService;
 
@@ -40,6 +42,14 @@ public class OrderService {
 
 	@Autowired
 	private RestaurantService restaurantService;
+
+	public List<RestaurantOrderEntity> listLastOrders(UUID restaurantId) {
+		return this.orderRepository.findAll().stream()
+				.filter(order -> order.getRestaurant().getId().equals(restaurantId)
+						&& System.currentTimeMillis() < (order.getCreatedAt().getTime() + LAST_ORDER_TIME))
+				.collect(Collectors.toList());
+
+	}
 
 	public List<RestaurantOrderEntity> listOrders(UUID restaurantId) {
 		return this.orderRepository.findAll().stream()

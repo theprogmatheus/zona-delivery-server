@@ -1,8 +1,10 @@
 package com.github.theprogmatheus.zonadelivery.server.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,23 @@ public class RestaurantController {
 
 	@Autowired
 	private UserService userService;
+
+	@SuppressWarnings("unchecked")
+	@GetMapping
+	public Object listRestaurants() {
+
+		UserEntity userEntity = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (userEntity == null)
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You must be logged in to do that");
+
+		Object result = this.restaurantService.listRestaurantsByOwner(userEntity);
+
+		if (result instanceof List)
+			return ResponseEntity.ok(((List<RestaurantEntity>) result).stream()
+					.map(restaurant -> new RestaurantDTO(restaurant)).collect(Collectors.toList()));
+
+		return ResponseEntity.ok(result);
+	}
 
 	@PostMapping("/register")
 	public Object createNewRestaurant(@RequestBody Map<String, String> body) {

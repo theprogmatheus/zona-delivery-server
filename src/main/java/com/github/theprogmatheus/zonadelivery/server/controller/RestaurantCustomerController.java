@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +50,32 @@ public class RestaurantCustomerController {
 	}
 
 	@GetMapping("/{customerId}")
-	public Object customer(@PathVariable UUID restaurantId, @PathVariable UUID customerId) {
+	public Object customer(@PathVariable UUID restaurantId, @PathVariable String customerId,
+			@PathParam(value = "by") String by) {
 		try {
-			RestaurantCustomerEntity customer = this.customerService.getCustomerById(customerId);
+
+			RestaurantCustomerEntity customer = null;
+
+			if (by != null && !by.isBlank()) {
+
+				switch (by.toUpperCase()) {
+				
+				case "WHATSAPP":
+					customer = this.customerService.getCustomeByWhatsappCustomerId(customerId);
+					break;
+					
+				case "IFOOD":
+					customer = this.customerService.getCustomeByIfoodCustomerId(customerId);
+					break;
+
+				default:
+					customer = this.customerService.getCustomerById(StringUtils.getUUIDFromString(customerId));
+					break;
+				}
+
+			} else
+				customer = this.customerService.getCustomerById(StringUtils.getUUIDFromString(customerId));
+
 			if (customer != null)
 				return ResponseEntity.ok(new RestaurantCustomerDTO(customer));
 			else

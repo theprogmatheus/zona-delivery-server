@@ -30,6 +30,11 @@ public class IndexController {
 		return "Index :/";
 	}
 
+	@GetMapping("/ping")
+	public String ping() {
+		return "Pong!";
+	}
+
 	@GetMapping("/restaurants")
 	public Object restaurants() {
 		return restaurantRepository.findAll().stream().map(restaurant -> new RestaurantDTO(restaurant))

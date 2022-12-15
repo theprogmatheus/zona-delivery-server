@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theprogmatheus.zonadelivery.server.dto.UserDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -40,7 +41,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			throws AuthenticationException {
 		try {
 			UserEntity user = new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
-
+			
 			return this.authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), null));
 		} catch (IOException e) {
@@ -51,6 +52,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
+		
 
 		Date expireAt = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
 		String token = JWT.create().withSubject(((UserEntity) authResult.getPrincipal()).getId().toString())
@@ -60,6 +62,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		responseBody.put("type", TOKEN_TYPE);
 		responseBody.put("accessToken", token);
 		responseBody.put("expireIn", EXPIRATION_TIME / 1_000);
+		responseBody.put("user", new UserDTO((UserEntity) authResult.getPrincipal()));
 
 		response.addHeader("Content-Type", "application/json");
 		response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));

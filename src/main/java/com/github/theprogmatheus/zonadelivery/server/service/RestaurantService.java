@@ -49,6 +49,12 @@ public class RestaurantService {
 		return null;
 	}
 
+	public Object listRestaurantsByOwner(UserEntity owner) {
+		if (owner == null)
+			return "The owner is null";
+		return this.restaurantRepository.findByOwner(owner);
+	}
+
 	public Object createNewRestaurant(UserEntity owner, String name) {
 
 		if (owner == null)
