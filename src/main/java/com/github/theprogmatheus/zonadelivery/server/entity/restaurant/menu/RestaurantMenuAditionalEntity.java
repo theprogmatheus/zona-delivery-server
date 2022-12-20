@@ -44,5 +44,11 @@ public class RestaurantMenuAditionalEntity {
 
 	@Column(nullable = false)
 	private double price;
+	
+	@Column(nullable = false)
+	private int minAmount; // se o minAmount não for definido, então minAmount é 1
+	
+	@Column(nullable = false)
+	private int maxAmount; // se o maxAmount não for definido, então maxAmount é infinito
 
 }

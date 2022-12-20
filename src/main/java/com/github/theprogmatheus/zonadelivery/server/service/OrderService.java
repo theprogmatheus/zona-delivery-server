@@ -105,17 +105,20 @@ public class OrderService {
 				// vamos listar os itens do pedido
 				List<RestaurantOrderItem> items = new ArrayList<>();
 
+				// NOTES
+				String orderNote = null;
+
 				for (IFoodOrderItem ifoodItem : ifoodOrder.getItems()) {
 					List<RestaurantOrderItem> aditionals = new ArrayList<>();
 
 					if (ifoodItem.getOptions() != null && !ifoodItem.getOptions().isEmpty()) {
 						for (IFoodOrderItemOption ifoodItemOption : ifoodItem.getOptions()) {
 							aditionals.add(new RestaurantOrderItem(ifoodItemOption.getName(),
-									ifoodItemOption.getPrice(), ifoodItemOption.getQuantity(), null));
+									ifoodItemOption.getPrice(), ifoodItemOption.getQuantity(), null, null));
 						}
 					}
 					items.add(new RestaurantOrderItem(ifoodItem.getName(), ifoodItem.getPrice(),
-							ifoodItem.getQuantity(), aditionals));
+							ifoodItem.getQuantity(), aditionals, ifoodItem.getObservations()));
 				}
 
 				RestaurantOrderTotal total = new RestaurantOrderTotal(ifoodOrder.getTotal().getSubTotal(),
@@ -132,7 +135,7 @@ public class OrderService {
 						}).collect(Collectors.toList()));
 
 				result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getId(), ifoodOrder.getDisplayId(), null,
-						ifoodOrder.getOrderType(), customer.getId(), address.getId(), items, total, payment);
+						ifoodOrder.getOrderType(), customer.getId(), address.getId(), items, total, payment, orderNote);
 
 				if (result instanceof RestaurantOrderEntity)
 					return (RestaurantOrderEntity) result;
@@ -144,7 +147,7 @@ public class OrderService {
 	// fazer um novo pedido
 	public Object placeOrder(UUID restaurantId, String channel, String ifoodId, String simpleId, Date deliveryDateTime,
 			String orderType, UUID customerId, UUID addressId, List<RestaurantOrderItem> items,
-			RestaurantOrderTotal total, RestaurantOrderPayment payment) {
+			RestaurantOrderTotal total, RestaurantOrderPayment payment, String orderNote) {
 
 		if (restaurantId == null)
 			return "The restaurantId is not valid";
@@ -194,7 +197,7 @@ public class OrderService {
 
 		RestaurantOrderEntity restaurantOrderEntity = this.orderRepository.saveAndFlush(
 				new RestaurantOrderEntity(null, restaurant, new Date(), simpleId, deliveryDateTime, orderType, channel,
-						customer, address, items, total, payment, OrderStatus.PLACED, iFoodOrderDetails));
+						customer, address, items, total, payment, OrderStatus.PLACED, iFoodOrderDetails, orderNote));
 
 		if (restaurantOrderEntity != null)
 			this.eventService.createNewEvent(restaurantOrderEntity, OrderStatus.PLACED, null);

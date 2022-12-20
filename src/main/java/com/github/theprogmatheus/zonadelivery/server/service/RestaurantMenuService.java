@@ -73,8 +73,8 @@ public class RestaurantMenuService {
 		if (menuId == null)
 			return "The menuId is not valid";
 
-		return this.aditionalRepository.findAll().stream().filter(aditional -> aditional.getMenu().getId().equals(menuId))
-				.collect(Collectors.toList());
+		return this.aditionalRepository.findAll().stream()
+				.filter(aditional -> aditional.getMenu().getId().equals(menuId)).collect(Collectors.toList());
 	}
 
 	public Object createMenu(UUID restaurantId, String name) {
@@ -125,7 +125,8 @@ public class RestaurantMenuService {
 				.saveAndFlush(new RestaurantMenuItemEntity(null, menu, null, itemName, itemPrice, null));
 	}
 
-	public Object createAditional(UUID menuId, String aditionalName, double aditionalPrice) {
+	public Object createAditional(UUID menuId, String aditionalName, double aditionalPrice, int minAmount,
+			int maxAmount) {
 
 		if (menuId == null)
 			return "The menuId is not valid";
@@ -138,8 +139,14 @@ public class RestaurantMenuService {
 		if (menu == null)
 			return "Menu not found";
 
-		return this.aditionalRepository
-				.saveAndFlush(new RestaurantMenuAditionalEntity(null, menu, null, aditionalName, aditionalPrice));
+		if (minAmount < 0)
+			minAmount = 1;
+
+		if (maxAmount < 0)
+			maxAmount = Integer.MAX_VALUE;
+
+		return this.aditionalRepository.saveAndFlush(new RestaurantMenuAditionalEntity(null, menu, null, aditionalName,
+				aditionalPrice, minAmount, maxAmount));
 
 	}
 

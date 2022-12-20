@@ -22,5 +22,6 @@ public class RestaurantOrderInputDTO {
 	private List<RestaurantOrderItem> items;
 	private RestaurantOrderTotal total;
 	private RestaurantOrderPayment payment;
+	private String note;
 
 }

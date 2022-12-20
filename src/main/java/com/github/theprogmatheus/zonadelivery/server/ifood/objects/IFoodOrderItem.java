@@ -20,6 +20,7 @@ public class IFoodOrderItem {
 	private double totalPrice;
 	private List<IFoodOrderItemOption> options;
 	private double price;
+	private String observations;
 	
 }
 /*

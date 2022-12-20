@@ -59,6 +59,7 @@ public class RestaurantOrderEntity {
 	@Column(columnDefinition = "VARCHAR(8)", nullable = false)
 	private String simpleId;
 
+	@Column(nullable = false)
 	private Date deliveryDateTime;
 
 	@Column(columnDefinition = "VARCHAR(128)", nullable = false)
@@ -92,6 +93,8 @@ public class RestaurantOrderEntity {
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	private IFoodOrderDetails ifoodOrder;
+	
+	private String note;
 
 	@JsonInclude(Include.NON_NULL)
 	@Data
@@ -103,6 +106,7 @@ public class RestaurantOrderEntity {
 		private double productPrice;
 		private int amount;
 		private List<RestaurantOrderItem> aditionals;
+		private String note;
 
 	}
 

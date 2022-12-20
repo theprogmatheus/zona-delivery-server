@@ -161,11 +161,11 @@ public class RestaurantMenuController {
 
 	@PostMapping("/{menuId}/register_item_aditional")
 	public Object menuRegisterItemAditional(@PathVariable UUID restaurantId, @PathVariable UUID menuId,
-			@RequestBody Map<String, String> body) {
+			@RequestBody RestaurantMenuAditionalDTO aditional) {
 		try {
 
-			Object result = this.menuService.createAditional(menuId, body.get("name"),
-					StringUtils.getDoubleFromString(body.get("price")));
+			Object result = this.menuService.createAditional(menuId, aditional.getName(), aditional.getPrice(),
+					aditional.getMinAmount(), aditional.getMaxAmount());
 
 			if (result instanceof String)
 				return ResponseEntity.ok(result);

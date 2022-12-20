@@ -20,6 +20,8 @@ public class RestaurantMenuAditionalDTO {
 	private Set<RestaurantMenuItemDTO> items;
 	private String name;
 	private double price;
+	private int minAmount;
+	private int maxAmount;
 
 	public RestaurantMenuAditionalDTO(RestaurantMenuAditionalEntity restaurantMenuAditionalEntity) {
 		if (restaurantMenuAditionalEntity != null) {
@@ -37,6 +39,8 @@ public class RestaurantMenuAditionalDTO {
 				this.name = restaurantMenuAditionalEntity.getName();
 
 			this.price = restaurantMenuAditionalEntity.getPrice();
+			this.minAmount = restaurantMenuAditionalEntity.getMinAmount();
+			this.maxAmount = restaurantMenuAditionalEntity.getMaxAmount();
 		}
 	}
 }

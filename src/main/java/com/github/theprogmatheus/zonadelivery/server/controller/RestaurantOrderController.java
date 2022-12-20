@@ -62,10 +62,10 @@ public class RestaurantOrderController {
 	@PostMapping("/create")
 	public Object place(@PathVariable UUID restaurantId, @RequestBody RestaurantOrderInputDTO order) {
 		try {
-
+// verificar ao fazer um pedido que não é para entrega, não precisar de endereço
 			Object result = this.orderService.placeOrder(restaurantId, order.getChannel(), null, order.getSimpleId(),
 					order.getDeliveryDateTime(), order.getOrderType(), order.getCustomerId(), order.getAddressId(),
-					order.getItems(), order.getTotal(), order.getPayment());
+					order.getItems(), order.getTotal(), order.getPayment(), order.getNote());
 
 			if (result instanceof RestaurantOrderEntity)
 				return new RestaurantOrderDTO((RestaurantOrderEntity) result);

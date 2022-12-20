@@ -35,6 +35,7 @@ public class RestaurantOrderDTO {
 	private RestaurantOrderTotal total;
 	private RestaurantOrderPayment payment;
 	private IFoodOrderDetails ifoodOrder;
+	private String note;
 
 	public RestaurantOrderDTO(RestaurantOrderEntity restaurantOrderEntity) {
 		if (restaurantOrderEntity != null) {
@@ -80,7 +81,8 @@ public class RestaurantOrderDTO {
 
 			if (restaurantOrderEntity.getIfoodOrder() != null)
 				this.ifoodOrder = restaurantOrderEntity.getIfoodOrder();
-
+			
+			this.note = restaurantOrderEntity.getNote();
 		}
 
 	}
