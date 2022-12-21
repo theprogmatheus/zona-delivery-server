@@ -45,5 +45,8 @@ public class RestaurantMenuCategoryEntity {
 	@JoinTable(name = "restaurant_menu_categories_items", joinColumns = {
 			@JoinColumn(name = "category_id") }, inverseJoinColumns = { @JoinColumn(name = "item_id") })
 	private Set<RestaurantMenuItemEntity> items;
+	
+	@Column
+	private boolean paused;
 
 }

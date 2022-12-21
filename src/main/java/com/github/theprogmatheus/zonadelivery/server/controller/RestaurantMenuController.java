@@ -146,8 +146,8 @@ public class RestaurantMenuController {
 			@RequestBody Map<String, String> body) {
 		try {
 
-			Object result = this.menuService.createItem(menuId, body.get("name"),
-					StringUtils.getDoubleFromString(body.get("price")));
+			Object result = this.menuService.createItem(menuId, body.get("name"), body.get("description"),
+					body.get("image"), StringUtils.getDoubleFromString(body.get("price")));
 
 			if (result instanceof String)
 				return ResponseEntity.ok(result);
@@ -164,8 +164,8 @@ public class RestaurantMenuController {
 			@RequestBody RestaurantMenuAditionalDTO aditional) {
 		try {
 
-			Object result = this.menuService.createAditional(menuId, aditional.getName(), aditional.getPrice(),
-					aditional.getMinAmount(), aditional.getMaxAmount());
+			Object result = this.menuService.createAditional(menuId, aditional.getName(), aditional.getDescription(),
+					aditional.getPrice(), aditional.getMinAmount(), aditional.getMaxAmount());
 
 			if (result instanceof String)
 				return ResponseEntity.ok(result);

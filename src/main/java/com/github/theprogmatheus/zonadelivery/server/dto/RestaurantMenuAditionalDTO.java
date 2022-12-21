@@ -18,10 +18,13 @@ public class RestaurantMenuAditionalDTO {
 
 	private UUID id;
 	private Set<RestaurantMenuItemDTO> items;
+	private Object optionals;
 	private String name;
+	private String description;
 	private double price;
 	private int minAmount;
 	private int maxAmount;
+	private boolean paused;
 
 	public RestaurantMenuAditionalDTO(RestaurantMenuAditionalEntity restaurantMenuAditionalEntity) {
 		if (restaurantMenuAditionalEntity != null) {
@@ -37,10 +40,12 @@ public class RestaurantMenuAditionalDTO {
 
 			if (restaurantMenuAditionalEntity.getName() != null)
 				this.name = restaurantMenuAditionalEntity.getName();
-
+			
+			this.description = restaurantMenuAditionalEntity.getDescription();
 			this.price = restaurantMenuAditionalEntity.getPrice();
 			this.minAmount = restaurantMenuAditionalEntity.getMinAmount();
 			this.maxAmount = restaurantMenuAditionalEntity.getMaxAmount();
+			this.paused = restaurantMenuAditionalEntity.isPaused();
 		}
 	}
 }

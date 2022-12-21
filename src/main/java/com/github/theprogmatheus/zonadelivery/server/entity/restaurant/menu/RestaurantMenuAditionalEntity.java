@@ -39,16 +39,24 @@ public class RestaurantMenuAditionalEntity {
 	@ManyToMany(mappedBy = "aditionals")
 	private Set<RestaurantMenuItemEntity> items;
 
+	@ManyToMany(mappedBy = "options")
+	private Set<RestaurantMenuOptionalEntity> optionals;
+
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
 	private String name;
 
+	@Column(nullable = false, columnDefinition = "VARCHAR(512)")
+	private String description;
+	
 	@Column(nullable = false)
 	private double price;
-	
+
 	@Column(nullable = false)
 	private int minAmount; // se o minAmount não for definido, então minAmount é 1
-	
+
 	@Column(nullable = false)
 	private int maxAmount; // se o maxAmount não for definido, então maxAmount é infinito
 
+	@Column
+	private boolean paused;
 }

@@ -194,7 +194,7 @@ public class RestaurantService {
 			return "The name is not valid";
 
 		return this.restaurantMenuCategoryRepository
-				.saveAndFlush(new RestaurantMenuCategoryEntity(null, menu, name, null));
+				.saveAndFlush(new RestaurantMenuCategoryEntity(null, menu, name, null, true));
 	}
 
 	public Object createNewRestaurantMenuItem(RestaurantMenuCategoryEntity category, String name, double price) {

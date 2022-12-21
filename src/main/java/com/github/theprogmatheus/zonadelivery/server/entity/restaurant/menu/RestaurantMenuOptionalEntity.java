@@ -21,12 +21,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "restaurant_menu_items")
+@Entity(name = "restaurant_menu_item_optionals")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantMenuItemEntity {
+public class RestaurantMenuOptionalEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,8 +38,10 @@ public class RestaurantMenuItemEntity {
 	@JoinColumn(name = "menu_id")
 	private RestaurantMenuEntity menu;
 
-	@ManyToMany(mappedBy = "items")
-	private Set<RestaurantMenuCategoryEntity> categories;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "restaurant_menu_item_optionals_items", joinColumns = {
+			@JoinColumn(name = "optional_id") }, inverseJoinColumns = { @JoinColumn(name = "item_id") })
+	private Set<RestaurantMenuItemEntity> items;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
 	private String name;
@@ -47,23 +49,15 @@ public class RestaurantMenuItemEntity {
 	@Column(columnDefinition = "VARCHAR(512)")
 	private String description;
 
-	@Column(columnDefinition = "BLOB")
-	private String image;
-
-	@Column(nullable = false)
-	private double price;
+	@Column
+	private int min;
 
 	@Column
-	private double oldPrice;
-
-	@Column
-	private boolean paused;
-
-	@ManyToMany(mappedBy = "items")
-	private Set<RestaurantMenuOptionalEntity> optionals;
+	private int max;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "restaurant_menu_items_aditionals", joinColumns = {
-			@JoinColumn(name = "item_id") }, inverseJoinColumns = { @JoinColumn(name = "aditional_id") })
-	private Set<RestaurantMenuAditionalEntity> aditionals;
+	@JoinTable(name = "restaurant_menu_item_optionals_options", joinColumns = {
+			@JoinColumn(name = "optional_id") }, inverseJoinColumns = { @JoinColumn(name = "aditional_id") })
+	private Set<RestaurantMenuAditionalEntity> options;
+
 }

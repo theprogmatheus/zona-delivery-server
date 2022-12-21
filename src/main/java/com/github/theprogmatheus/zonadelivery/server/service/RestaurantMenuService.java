@@ -105,15 +105,20 @@ public class RestaurantMenuService {
 		if (menu == null)
 			return "Menu not found";
 
-		return this.categoryRepository.saveAndFlush(new RestaurantMenuCategoryEntity(null, menu, name, null));
+		return this.categoryRepository.saveAndFlush(new RestaurantMenuCategoryEntity(null, menu, name, null, true));
 	}
 
-	public Object createItem(UUID menuId, String itemName, double itemPrice) {
+	public Object createItem(UUID menuId, String itemName, String itemDescription, String itemImage, double itemPrice) {
 
 		if (menuId == null)
 			return "The menuId is not valid";
+
 		if (itemName == null || itemName.isEmpty())
 			return "The itemName is not valid";
+
+		if (itemDescription == null || itemDescription.isEmpty())
+			return "The itemDescription is not valid";
+
 		if (itemPrice < 0)
 			return "The itemPrice is not valid";
 
@@ -121,12 +126,12 @@ public class RestaurantMenuService {
 		if (menu == null)
 			return "Menu not found";
 
-		return this.itemRepository
-				.saveAndFlush(new RestaurantMenuItemEntity(null, menu, null, itemName, itemPrice, null));
+		return this.itemRepository.saveAndFlush(new RestaurantMenuItemEntity(null, menu, null, itemName,
+				itemDescription, itemImage, itemPrice, 0, true, null, null));
 	}
 
-	public Object createAditional(UUID menuId, String aditionalName, double aditionalPrice, int minAmount,
-			int maxAmount) {
+	public Object createAditional(UUID menuId, String aditionalName, String aditionalDescription, double aditionalPrice,
+			int minAmount, int maxAmount) {
 
 		if (menuId == null)
 			return "The menuId is not valid";
@@ -145,8 +150,8 @@ public class RestaurantMenuService {
 		if (maxAmount < 0)
 			maxAmount = Integer.MAX_VALUE;
 
-		return this.aditionalRepository.saveAndFlush(new RestaurantMenuAditionalEntity(null, menu, null, aditionalName,
-				aditionalPrice, minAmount, maxAmount));
+		return this.aditionalRepository.saveAndFlush(new RestaurantMenuAditionalEntity(null, menu, null, null,
+				aditionalName, aditionalDescription, aditionalPrice, minAmount, maxAmount, true));
 
 	}
 

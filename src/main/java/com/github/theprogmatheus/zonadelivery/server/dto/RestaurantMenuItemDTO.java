@@ -19,7 +19,12 @@ public class RestaurantMenuItemDTO {
 	private UUID id;
 	private Set<RestaurantMenuCategoryDTO> categories;
 	private String name;
+	private String description;
+	private String image;
 	private double price;
+	private double oldPrice;
+	private boolean paused;
+	private Set<RestaurantMenuOptionalDTO> optionals;
 	private Set<RestaurantMenuAditionalDTO> aditionals;
 
 	public RestaurantMenuItemDTO(RestaurantMenuItemEntity restaurantMenuItemEntity) {
@@ -37,8 +42,16 @@ public class RestaurantMenuItemDTO {
 			if (restaurantMenuItemEntity.getName() != null)
 				this.name = restaurantMenuItemEntity.getName();
 
+			this.description = restaurantMenuItemEntity.getDescription();
+			this.image = restaurantMenuItemEntity.getImage();
 			this.price = restaurantMenuItemEntity.getPrice();
+			this.oldPrice = restaurantMenuItemEntity.getOldPrice();
+			this.paused = restaurantMenuItemEntity.isPaused();
 
+			if (restaurantMenuItemEntity.getOptionals() != null)
+				this.optionals = restaurantMenuItemEntity.getOptionals().stream()
+						.map(optional -> new RestaurantMenuOptionalDTO(optional)).collect(Collectors.toSet());
+			
 			if (restaurantMenuItemEntity.getAditionals() != null)
 				this.aditionals = restaurantMenuItemEntity.getAditionals().stream().map(aditional -> {
 

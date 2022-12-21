@@ -20,6 +20,7 @@ public class RestaurantMenuCategoryDTO {
 	private RestaurantMenuDTO menu;
 	private String name;
 	private Set<RestaurantMenuItemDTO> items;
+	private boolean paused;
 
 	public RestaurantMenuCategoryDTO(RestaurantMenuCategoryEntity restaurantMenuCategoryEntity) {
 		if (restaurantMenuCategoryEntity != null) {
@@ -39,6 +40,8 @@ public class RestaurantMenuCategoryDTO {
 
 					return new RestaurantMenuItemDTO(item);
 				}).collect(Collectors.toSet());
+			
+			this.paused = restaurantMenuCategoryEntity.isPaused();
 		}
 	}
 
