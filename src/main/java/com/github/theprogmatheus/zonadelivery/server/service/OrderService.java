@@ -92,14 +92,16 @@ public class OrderService {
 					return null;
 
 				// precisamos resgatar/registrar o endereço fornecido pelo ifood
-				RestaurantCustomerAddressEntity address = null;
-				Object result = this.customerService.addNewCustomerAddressByIFoodOrderDeliveryAddress(customer.getId(),
-						ifoodOrder.getDelivery().getDeliveryAddress());
+				UUID addressId = null;
+				if (ifoodOrder.getDelivery() != null) {
+					Object result = this.customerService.addNewCustomerAddressByIFoodOrderDeliveryAddress(
+							customer.getId(), ifoodOrder.getDelivery().getDeliveryAddress());
 
-				if (result instanceof RestaurantCustomerAddressEntity)
-					address = (RestaurantCustomerAddressEntity) result;
+					if (result instanceof RestaurantCustomerAddressEntity)
+						addressId = ((RestaurantCustomerAddressEntity) result).getId();
 
-				if (address == null)
+				}
+				if (addressId == null && ifoodOrder.getOrderType().equals("DELIVERY"))
 					return null;
 
 				// vamos listar os itens do pedido
@@ -134,8 +136,8 @@ public class OrderService {
 									paymentPethod.isPrepaid(), paymentPethod.getCash(), paymentPethod.getCard());
 						}).collect(Collectors.toList()));
 
-				result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getId(), ifoodOrder.getDisplayId(), null,
-						ifoodOrder.getOrderType(), customer.getId(), address.getId(), items, total, payment, orderNote);
+				Object result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getId(), ifoodOrder.getDisplayId(),
+						null, ifoodOrder.getOrderType(), customer.getId(), addressId, items, total, payment, orderNote);
 
 				if (result instanceof RestaurantOrderEntity)
 					return (RestaurantOrderEntity) result;
@@ -167,7 +169,7 @@ public class OrderService {
 		if (customerId == null)
 			return "The customerId is not valid";
 
-		if (addressId == null)
+		if (orderType.equals("DELIVERY") && addressId == null)
 			return "The addressId is not valid";
 
 		if (items == null || items.isEmpty())
@@ -187,9 +189,12 @@ public class OrderService {
 		if (customer == null)
 			return "Customer is not valid";
 
-		RestaurantCustomerAddressEntity address = this.customerService.getAddressById(addressId);
-		if (address == null)
-			return "Address is not valid";
+		RestaurantCustomerAddressEntity address = null;
+		if (orderType.equals("DELIVERY")) {
+			address = this.customerService.getAddressById(addressId);
+			if (address == null)
+				return "Address is not valid";
+		}
 
 		IFoodOrderDetails iFoodOrderDetails = null;
 		if (ifoodId != null)

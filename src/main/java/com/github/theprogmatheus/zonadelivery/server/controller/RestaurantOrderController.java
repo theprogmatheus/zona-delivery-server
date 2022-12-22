@@ -1,5 +1,7 @@
 package com.github.theprogmatheus.zonadelivery.server.controller;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderDTO;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderInputDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
+import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
+import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodCancellationReason;
+import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodCancellationReasonRequest;
 import com.github.theprogmatheus.zonadelivery.server.service.OrderService;
 
 @RestController
@@ -138,4 +143,34 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@GetMapping("/{orderId}/ifood/cancellationReasons")
+	public Object cancellationReasons(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
+		try {
+			Object result = this.orderService.getOrder(orderId);
+			if (result instanceof RestaurantOrderEntity) {
+				RestaurantOrderEntity order = ((RestaurantOrderEntity) result);
+				if (order.getIfoodOrder() != null) {
+					List<IFoodCancellationReason> reasons = IFoodAPI
+							.getCancellationReasons(order.getIfoodOrder().getId());
+					if (reasons != null)
+						return ResponseEntity.ok(reasons);
+				}
+			}
+			return ResponseEntity.ok(Arrays.asList());
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+		}
+	}
+
+	@PostMapping("/{orderId}/ifood/requestCancellation")
+	public Object requestCancellation(@PathVariable UUID restaurantId, @PathVariable UUID orderId,
+			@RequestBody IFoodCancellationReasonRequest request) {
+		Object result = this.orderService.getOrder(orderId);
+		if (result instanceof RestaurantOrderEntity) {
+			RestaurantOrderEntity order = ((RestaurantOrderEntity) result);
+			if (order.getIfoodOrder() != null)
+				IFoodAPI.requestCancellation(order.getIfoodOrder().getId(), request);
+		}
+		return ResponseEntity.ok(request);
+	}
 }

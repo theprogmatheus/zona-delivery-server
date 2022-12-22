@@ -38,9 +38,7 @@ public class RestaurantMenuOptionalEntity {
 	@JoinColumn(name = "menu_id")
 	private RestaurantMenuEntity menu;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "restaurant_menu_item_optionals_items", joinColumns = {
-			@JoinColumn(name = "optional_id") }, inverseJoinColumns = { @JoinColumn(name = "item_id") })
+	@ManyToMany(mappedBy = "optionals")
 	private Set<RestaurantMenuItemEntity> items;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")

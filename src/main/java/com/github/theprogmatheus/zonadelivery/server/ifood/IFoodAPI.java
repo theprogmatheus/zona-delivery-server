@@ -18,6 +18,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodCancellationReason;
+import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodCancellationReasonRequest;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodEvent;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodHandshakeConfirmResponse;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDeliveryAddressCoords;
@@ -143,6 +145,47 @@ public class IFoodAPI {
 		}
 	}
 
+	public static List<IFoodCancellationReason> getCancellationReasons(String orderId) {
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(new LinkedMultiValueMap<>(),
+					createHeaders());
+			ResponseEntity<List<IFoodCancellationReason>> response = restTemplate.exchange(
+					IFoodEndPoints.ORDER_CANCELLATION_REASONS.createUrl(orderId),
+					IFoodEndPoints.ORDER_CANCELLATION_REASONS.getMethod(), httpEntity,
+					new ParameterizedTypeReference<List<IFoodCancellationReason>>() {
+					});
+			return response.getBody();
+		} catch (Exception exception) {
+			System.err.println("Ocorreu um erro ao tentar recuperar as razões de cancelamento do IFood: "
+					+ exception.getMessage());
+			return new ArrayList<>();
+		}
+	}
+
+	public static void requestCancellation(String orderId, IFoodCancellationReasonRequest cancelationReason) {
+		if (cancelationReason != null) {
+			try {
+
+				RestTemplate restTemplate = new RestTemplate();
+
+				HttpHeaders headers = createHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+
+				HttpEntity<String> httpEntity = new HttpEntity<String>(
+						new ObjectMapper().writeValueAsString(cancelationReason), headers);
+
+				IFoodEndPoints endPoint = IFoodEndPoints.ORDER_REQUEST_CANCELLATION;
+
+				restTemplate.exchange(endPoint.createUrl(orderId), endPoint.getMethod(), httpEntity, Object.class);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public static void eventsAcknowledgment(List<IFoodEvent> events) {
 		if (events != null && !events.isEmpty()) {
 			try {
@@ -219,6 +262,7 @@ public class IFoodAPI {
 		ORDER_ACCEPT_CANCELLATION("/order/v1.0/orders/{{0}}/acceptCancellation", HttpMethod.POST),
 		ORDER_DENY_CANCELLATION("/order/v1.0/orders/{{0}}/denyCancellation", HttpMethod.POST),
 		ORDER_REQUEST_DRIVER("/order/v1.0/orders/{{0}}/requestDriver", HttpMethod.POST),
+		ORDER_CANCELLATION_REASONS("/order/v1.0/orders/{{0}}/cancellationReasons", HttpMethod.GET),
 
 		HANDSHAKE_CONFIRM("/marketplace-delivery-handshake/confirm", HttpMethod.POST),
 		LIST_MERCHANTS("/merchant/v1.0/merchants", HttpMethod.GET),

@@ -33,10 +33,14 @@ public class UserDTO {
 
 		if (userEntity.getRestaurants() != null) {
 			this.restaurants = userEntity.getRestaurants().stream().map(restaurant -> {
+				
+				
+				RestaurantDTO restaurantDTO = new RestaurantDTO();
+				restaurantDTO.setId(restaurant.getId());
+				restaurantDTO.setNameId(restaurant.getNameId());
+				restaurantDTO.setDisplayName(restaurant.getDisplayName());
 
-				restaurant.setOwner(null);
-
-				return new RestaurantDTO(restaurant);
+				return restaurantDTO;
 			}).collect(Collectors.toSet());
 		}
 	}

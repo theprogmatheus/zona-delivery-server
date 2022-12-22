@@ -31,10 +31,10 @@ public class MyAuthenticationManager implements AuthenticationManager {
 		if (authentication.getCredentials() == null)
 			throw new BadCredentialsException("BCE1002");
 
-		String username = authentication.getPrincipal().toString();
+		String email = authentication.getPrincipal().toString();
 		String password = authentication.getCredentials().toString();
 
-		UserEntity user = this.userService.getUserByUsername(username);
+		UserEntity user = this.userService.getUserByEmail(email);
 
 		if (user == null)
 			throw new BadCredentialsException("BCE1003");

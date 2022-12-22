@@ -48,10 +48,16 @@ public class RestaurantMenuItemDTO {
 			this.oldPrice = restaurantMenuItemEntity.getOldPrice();
 			this.paused = restaurantMenuItemEntity.isPaused();
 
-			if (restaurantMenuItemEntity.getOptionals() != null)
-				this.optionals = restaurantMenuItemEntity.getOptionals().stream()
-						.map(optional -> new RestaurantMenuOptionalDTO(optional)).collect(Collectors.toSet());
 			
+			if (restaurantMenuItemEntity.getOptionals() != null)
+				this.optionals = restaurantMenuItemEntity.getOptionals().stream().map(optional -> {
+
+					optional.setItems(null);
+
+					return new RestaurantMenuOptionalDTO(optional);
+				}).collect(Collectors.toSet());
+				
+
 			if (restaurantMenuItemEntity.getAditionals() != null)
 				this.aditionals = restaurantMenuItemEntity.getAditionals().stream().map(aditional -> {
 

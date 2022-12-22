@@ -41,9 +41,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			throws AuthenticationException {
 		try {
 			UserEntity user = new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
-			
-			return this.authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), null));
+
+			return this.authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), null));
 		} catch (IOException e) {
 			throw new RuntimeException("Falha ao autenticar usuario: ", e);
 		}
@@ -52,7 +52,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		
 
 		Date expireAt = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
 		String token = JWT.create().withSubject(((UserEntity) authResult.getPrincipal()).getId().toString())

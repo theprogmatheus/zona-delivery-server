@@ -59,7 +59,9 @@ public class RestaurantMenuItemEntity {
 	@Column
 	private boolean paused;
 
-	@ManyToMany(mappedBy = "items")
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "restaurant_menu_items_optionals", joinColumns = {
+			@JoinColumn(name = "item_id") }, inverseJoinColumns = { @JoinColumn(name = "optional_id") })
 	private Set<RestaurantMenuOptionalEntity> optionals;
 
 	@ManyToMany(fetch = FetchType.EAGER)
