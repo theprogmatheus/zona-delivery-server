@@ -90,7 +90,7 @@ public class RestaurantMenuService {
 		if (restaurant == null)
 			return "Restaurant not found";
 
-		return this.menuRepository.saveAndFlush(new RestaurantMenuEntity(null, restaurant, name, null));
+		return this.menuRepository.saveAndFlush(new RestaurantMenuEntity(null, restaurant, name, null, null, null, null));
 	}
 
 	public Object createCategory(UUID menuId, String name) {
@@ -227,6 +227,7 @@ public class RestaurantMenuService {
 			return;
 		this.categoryRepository.deleteById(categoryId);
 		this.categoryRepository.flush();
+		System.out.println("deleted category " + categoryId);
 	}
 
 	public void deleteItem(UUID itemId) {

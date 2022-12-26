@@ -222,7 +222,7 @@ public class RestaurantMenuController {
 			@RequestBody Map<String, String> body) {
 		try {
 			this.menuService.deleteMenu(StringUtils.getUUIDFromString(body.get("menu")));
-			return ResponseEntity.ok();
+			return ResponseEntity.ok(this.menuService.getMenuById(menuId) == null);
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -232,8 +232,10 @@ public class RestaurantMenuController {
 	public Object menuDeleteCategory(@PathVariable UUID restaurantId, @PathVariable UUID menuId,
 			@RequestBody Map<String, String> body) {
 		try {
-			this.menuService.deleteMenu(StringUtils.getUUIDFromString(body.get("category")));
-			return ResponseEntity.ok();
+			System.out.println(body);
+			UUID categoryId = StringUtils.getUUIDFromString(body.get("category"));
+			this.menuService.deleteCategory(categoryId);
+			return ResponseEntity.ok(this.menuService.getMenuCategoryById(categoryId) == null);
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}

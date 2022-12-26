@@ -183,7 +183,7 @@ public class RestaurantService {
 		if (name == null || name.isEmpty())
 			return "The name is not valid";
 
-		return this.restaurantMenuRepository.saveAndFlush(new RestaurantMenuEntity(null, restaurant, name, null));
+		return this.restaurantMenuRepository.saveAndFlush(new RestaurantMenuEntity(null, restaurant, name, null, null, null, null));
 	}
 
 	public Object createNewRestaurantMenuCategory(RestaurantMenuEntity menu, String name) {

@@ -44,5 +44,13 @@ public class RestaurantMenuEntity {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu", orphanRemoval = true)
 	private Set<RestaurantMenuCategoryEntity> categories;
-	
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu", orphanRemoval = true)
+	private Set<RestaurantMenuItemEntity> items;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu", orphanRemoval = true)
+	private Set<RestaurantMenuAditionalEntity> aditionals;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "menu", orphanRemoval = true)
+	private Set<RestaurantMenuOptionalEntity> optionals;
 }
