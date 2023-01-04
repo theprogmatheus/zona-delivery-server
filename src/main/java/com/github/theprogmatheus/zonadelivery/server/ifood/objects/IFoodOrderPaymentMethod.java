@@ -15,6 +15,7 @@ public class IFoodOrderPaymentMethod {
 	private String type;
 	private Map<String, ? > card;
 	private Map<String, ? > cash;
+	private Map<String, ? > wallet;
 	private boolean prepaid;
 	
 }

@@ -13,6 +13,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.Restauran
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuCategoryEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuItemEntity;
+import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantIfoodMerchantRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuCategoryRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantMenuItemRepository;
@@ -124,6 +125,23 @@ public class RestaurantService {
 				.collect(Collectors.toSet());
 	}
 
+	public Object getRestaurantIFoodMerchantStatus(UUID restaurantId, String merchantId) {
+		if (restaurantId == null)
+			return "restaurantId cant be null";
+		if (merchantId == null || merchantId.isBlank())
+			return "merchantId cant be null or empty";
+
+		RestaurantEntity restaurant = getRestaurantById(restaurantId);
+		if (restaurant == null)
+			return "Restaurant not found";
+
+		if (restaurant.getIFoodMerchants().stream().map(ifoodMerchant -> ifoodMerchant.getMerchantId())
+				.anyMatch(id -> merchantId.equals(id)))
+			return IFoodAPI.getMerchantStatus(merchantId);
+		
+		return "The merchantId is not controlled by this restaurant.";
+	}
+
 	public Object addRestaurantIFoodMerchant(RestaurantEntity restaurant, String merchantName, String merchantId) {
 
 		if (restaurant == null)
@@ -183,7 +201,8 @@ public class RestaurantService {
 		if (name == null || name.isEmpty())
 			return "The name is not valid";
 
-		return this.restaurantMenuRepository.saveAndFlush(new RestaurantMenuEntity(null, restaurant, name, null, null, null, null));
+		return this.restaurantMenuRepository
+				.saveAndFlush(new RestaurantMenuEntity(null, restaurant, name, null, null, null, null));
 	}
 
 	public Object createNewRestaurantMenuCategory(RestaurantMenuEntity menu, String name) {

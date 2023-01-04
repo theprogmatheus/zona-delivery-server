@@ -135,6 +135,21 @@ public class RestaurantController {
 		}
 	}
 
+	@GetMapping("/{restaurantId}/ifood/merchants/{merchantId}/status")
+	public Object merchantStatus(@PathVariable UUID restaurantId, @PathVariable String merchantId) {
+		try {
+
+			Object result = this.restaurantService.getRestaurantIFoodMerchantStatus(restaurantId, merchantId);
+
+			if (result instanceof String)
+				return ResponseEntity.ok(result);
+
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+		}
+	}
+
 	@PostMapping("/{restaurantId}/ifood/add_merchant")
 	public Object addMerchant(@PathVariable UUID restaurantId, @RequestBody Map<String, String> body) {
 		try {

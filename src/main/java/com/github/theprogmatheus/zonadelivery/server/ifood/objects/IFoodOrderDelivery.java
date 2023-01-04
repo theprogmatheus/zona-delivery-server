@@ -11,7 +11,7 @@ public class IFoodOrderDelivery {
 	private String deliveredBy;
 	private String deliveryDateTime;
 	private IFoodOrderDeliveryAddress deliveryAddress;
-	
+	private String observations;
 
 }
 /*

@@ -65,7 +65,6 @@ public class IFoodAPI {
 	}
 
 	public static void dispatchOrder(String orderId) {
-
 		try {
 
 			RestTemplate restTemplate = new RestTemplate();
@@ -77,7 +76,20 @@ public class IFoodAPI {
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
+	}
 
+	public static void readyToPickupOrder(String orderId) {
+		try {
+
+			RestTemplate restTemplate = new RestTemplate();
+			IFoodEndPoints endPoint = IFoodEndPoints.ORDER_READY_TO_PICKUP;
+			HttpEntity<String> httpEntity = new HttpEntity<String>(createHeaders());
+
+			restTemplate.exchange(endPoint.createUrl(orderId), endPoint.getMethod(), httpEntity, Object.class);
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 
 	public static void confirmOrder(String orderId) {
@@ -160,6 +172,24 @@ public class IFoodAPI {
 		} catch (Exception exception) {
 			System.err.println("Ocorreu um erro ao tentar recuperar as razões de cancelamento do IFood: "
 					+ exception.getMessage());
+			return new ArrayList<>();
+		}
+	}
+
+	public static Object getMerchantStatus(String merchantId) {
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(new LinkedMultiValueMap<>(),
+					createHeaders());
+			ResponseEntity<Object> response = restTemplate.exchange(
+					IFoodEndPoints.MERCHANT_STATUS.createUrl(merchantId), IFoodEndPoints.MERCHANT_STATUS.getMethod(),
+					httpEntity, new ParameterizedTypeReference<Object>() {
+					});
+			return response.getBody();
+		} catch (Exception exception) {
+			System.err.println(
+					"Ocorreu um erro ao tentar recuperar o status de merchant do IFood: " + exception.getMessage());
 			return new ArrayList<>();
 		}
 	}
@@ -257,7 +287,7 @@ public class IFoodAPI {
 		ORDER_DISPATCH("/order/v1.0/orders/{{0}}/dispatch", HttpMethod.POST),
 		ORDER_CONFIRM("/order/v1.0/orders/{{0}}/confirm", HttpMethod.POST),
 		ORDER_START_PREPARATION("/order/v1.0/orders/{{0}}/startPreparation", HttpMethod.POST),
-		ORDER_READY_TO_PICKUP("/order/v1.0/orders/{{0}}/readyToPickup", HttpMethod.POST),
+		ORDER_READY_TO_PICKUP("/order/v1.0/orders/{{0}}/readyToPickup", HttpMethod.POST), //
 		ORDER_REQUEST_CANCELLATION("/order/v1.0/orders/{{0}}/requestCancellation", HttpMethod.POST),
 		ORDER_ACCEPT_CANCELLATION("/order/v1.0/orders/{{0}}/acceptCancellation", HttpMethod.POST),
 		ORDER_DENY_CANCELLATION("/order/v1.0/orders/{{0}}/denyCancellation", HttpMethod.POST),

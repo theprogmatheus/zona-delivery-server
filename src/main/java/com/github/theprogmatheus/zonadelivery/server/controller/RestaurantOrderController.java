@@ -114,10 +114,23 @@ public class RestaurantOrderController {
 	@PostMapping("/{orderId}/dispatch")
 	public Object dispatch(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
 		try {
+			Object result = null;
 
-			Object result = this.orderService.dispatchOrder(orderId);
+			Object order = this.orderService.getOrder(orderId);
 
-			if (result instanceof RestaurantOrderEntity)
+			if (order instanceof RestaurantOrderEntity) {
+				RestaurantOrderEntity theOrder = ((RestaurantOrderEntity) order);
+				if (theOrder.getIfoodOrder() != null && (theOrder.getIfoodOrder().getOrderType().equals("TAKEOUT"))) {
+					// manda ready
+					result = this.orderService.readyToPickupOrder(orderId);
+				} else {
+					// manda o dispatch
+					result = this.orderService.dispatchOrder(orderId);
+				}
+				// TAKEOUT
+			}
+
+			if (result != null && (result instanceof RestaurantOrderEntity))
 				return new RestaurantOrderDTO((RestaurantOrderEntity) result);
 
 			return ResponseEntity.ok(result);

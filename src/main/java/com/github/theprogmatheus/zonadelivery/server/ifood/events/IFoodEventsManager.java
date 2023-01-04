@@ -49,7 +49,7 @@ public class IFoodEventsManager {
 	 * Podemos conferir os rate-limit através de
 	 * https://developer.ifood.com.br/pt-BR/docs/rate-limit
 	 */
-	@Scheduled(fixedRate = 15_000)
+	@Scheduled(fixedRate = 30_000)
 	public void checkIFoodEvents() {
 
 		if (registeredEventHandlers == null)

@@ -227,7 +227,6 @@ public class RestaurantMenuService {
 			return;
 		this.categoryRepository.deleteById(categoryId);
 		this.categoryRepository.flush();
-		System.out.println("deleted category " + categoryId);
 	}
 
 	public void deleteItem(UUID itemId) {

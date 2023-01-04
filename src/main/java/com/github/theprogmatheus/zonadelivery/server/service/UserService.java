@@ -34,7 +34,7 @@ public class UserService {
 			if (!username.matches(Utils.REGEX_USERNAME))
 				return "The username is invalid"; // user name invalid
 
-			if (email != null && !email.matches(Utils.REGEX_EMAIL))
+			if (email == null)
 				return "The email is invalid"; // email invalid
 
 			if (getUserByUsername(username) != null)

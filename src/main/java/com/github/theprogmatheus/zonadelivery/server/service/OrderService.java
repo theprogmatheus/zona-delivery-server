@@ -1,5 +1,6 @@
 package com.github.theprogmatheus.zonadelivery.server.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -136,8 +137,16 @@ public class OrderService {
 									paymentPethod.isPrepaid(), paymentPethod.getCash(), paymentPethod.getCard());
 						}).collect(Collectors.toList()));
 
+				Date deliveryDateTime = null;
+
+				if (ifoodOrder.getDelivery() != null && ifoodOrder.getDelivery().getDeliveryDateTime() != null
+						&& !ifoodOrder.getDelivery().getDeliveryDateTime().isBlank()) {
+					deliveryDateTime = Date.from(Instant.parse(ifoodOrder.getDelivery().getDeliveryDateTime()));
+				}
+
 				Object result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getId(), ifoodOrder.getDisplayId(),
-						null, ifoodOrder.getOrderType(), customer.getId(), addressId, items, total, payment, orderNote);
+						deliveryDateTime, ifoodOrder.getOrderType(), customer.getId(), addressId, items, total, payment,
+						orderNote);
 
 				if (result instanceof RestaurantOrderEntity)
 					return (RestaurantOrderEntity) result;
@@ -243,6 +252,15 @@ public class OrderService {
 	}
 
 	public Object readyToPickupOrder(UUID orderId) {
+		if (orderId == null)
+			return "The orderId is not valid";
+		RestaurantOrderEntity order = getOrderById(orderId);
+		if (order == null)
+			return "Order not found";
+
+		if (order.getChannel().equals("IFOOD") && order.getIfoodOrder() != null)
+			IFoodAPI.readyToPickupOrder(order.getIfoodOrder().getId());
+
 		return changeOrderStatus(orderId, OrderStatus.READY_TO_PICKUP);
 	}
 
@@ -297,5 +315,17 @@ public class OrderService {
 		return this.orderRepository.findAll().stream()
 				.filter(order -> order.getIfoodOrder() != null && order.getIfoodOrder().getId().equals(ifoodId))
 				.findFirst().orElse(null);
+	}
+
+	public void finishOldOrders() {
+		this.orderRepository.findAll().stream().forEach(order -> {
+			// 18_000_000 = 5hours
+
+			if ((!(order.getStatus().equals(OrderStatus.CONCLUDED) || order.getStatus().equals(OrderStatus.CANCELLED)))
+					&& (System.currentTimeMillis() >= (order.getCreatedAt().getTime() + 18_000_000))) {
+				changeOrderStatus(order.getId(), OrderStatus.CONCLUDED);
+			}
+		});
+
 	}
 }

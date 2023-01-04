@@ -221,7 +221,8 @@ public class RestaurantMenuController {
 	public Object menuDelete(@PathVariable UUID restaurantId, @PathVariable UUID menuId,
 			@RequestBody Map<String, String> body) {
 		try {
-			this.menuService.deleteMenu(StringUtils.getUUIDFromString(body.get("menu")));
+			menuId = StringUtils.getUUIDFromString(body.get("menu"));
+			this.menuService.deleteMenu(menuId);
 			return ResponseEntity.ok(this.menuService.getMenuById(menuId) == null);
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
@@ -232,7 +233,6 @@ public class RestaurantMenuController {
 	public Object menuDeleteCategory(@PathVariable UUID restaurantId, @PathVariable UUID menuId,
 			@RequestBody Map<String, String> body) {
 		try {
-			System.out.println(body);
 			UUID categoryId = StringUtils.getUUIDFromString(body.get("category"));
 			this.menuService.deleteCategory(categoryId);
 			return ResponseEntity.ok(this.menuService.getMenuCategoryById(categoryId) == null);
@@ -245,8 +245,9 @@ public class RestaurantMenuController {
 	public Object menuDeleteItem(@PathVariable UUID restaurantId, @PathVariable UUID menuId,
 			@RequestBody Map<String, String> body) {
 		try {
-			this.menuService.deleteMenu(StringUtils.getUUIDFromString(body.get("item")));
-			return ResponseEntity.ok();
+			UUID itemId = StringUtils.getUUIDFromString(body.get("item"));
+			this.menuService.deleteItem(itemId);
+			return ResponseEntity.ok(this.menuService.getMenuItemById(itemId) == null);
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
 		}
@@ -256,7 +257,7 @@ public class RestaurantMenuController {
 	public Object menuDeleteItemAditional(@PathVariable UUID restaurantId, @PathVariable UUID menuId,
 			@RequestBody Map<String, String> body) {
 		try {
-			this.menuService.deleteMenu(StringUtils.getUUIDFromString(body.get("aditional")));
+			this.menuService.deleteAditional(StringUtils.getUUIDFromString(body.get("aditional")));
 			return ResponseEntity.ok();
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
