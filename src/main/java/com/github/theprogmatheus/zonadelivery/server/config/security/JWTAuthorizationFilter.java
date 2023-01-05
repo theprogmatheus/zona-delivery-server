@@ -58,7 +58,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 				accessToken = request.getParameter("access_token");
 
 			if (accessToken != null && !accessToken.isBlank()) {
-				System.out.println("Try connect with token: " + accessToken);
 				String userUuid = JWT.require(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes())).build()
 						.verify(accessToken).getSubject();
 
