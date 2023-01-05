@@ -103,6 +103,24 @@ public class RestaurantCustomerAddressEntity {
 		private double longitude;
 		private double latitude;
 
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			RestaurantCustomerAddressCoords other = (RestaurantCustomerAddressCoords) obj;
+			return Double.doubleToLongBits(latitude) == Double.doubleToLongBits(other.latitude)
+					&& Double.doubleToLongBits(longitude) == Double.doubleToLongBits(other.longitude);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(latitude, longitude);
+		}
+
 	}
 
 }

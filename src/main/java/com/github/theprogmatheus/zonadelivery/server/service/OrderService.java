@@ -95,8 +95,10 @@ public class OrderService {
 				// precisamos resgatar/registrar o endereço fornecido pelo ifood
 				UUID addressId = null;
 				if (ifoodOrder.getDelivery() != null) {
-					Object result = this.customerService.addNewCustomerAddressByIFoodOrderDeliveryAddress(
-							customer.getId(), ifoodOrder.getDelivery().getDeliveryAddress());
+					Object result = this.customerService.getAddressByIFoodOrder(ifoodOrder);
+					if (result == null)
+						result = this.customerService.addNewCustomerAddressByIFoodOrderDeliveryAddress(customer.getId(),
+								ifoodOrder.getDelivery().getDeliveryAddress());
 
 					if (result instanceof RestaurantCustomerAddressEntity)
 						addressId = ((RestaurantCustomerAddressEntity) result).getId();

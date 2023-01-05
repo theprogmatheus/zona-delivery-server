@@ -12,6 +12,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderCustomer;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDeliveryAddress;
+import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantCustomerAddressRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantCustomerRepository;
 
@@ -124,6 +125,33 @@ public class RestaurantCustomerService {
 		customer.setPhone(phone);
 
 		return this.customerRepository.saveAndFlush(customer);
+	}
+
+	public RestaurantCustomerAddressEntity getAddressByIFoodOrder(IFoodOrderDetails order) {
+
+		if (order != null && order.getCustomer() != null && order.getDelivery() != null) {
+			IFoodOrderDeliveryAddress ifoodOrderAddress = order.getDelivery().getDeliveryAddress();
+			if (ifoodOrderAddress != null) {
+
+				RestaurantCustomerEntity customer = getCustomeByIfoodCustomerId(order.getCustomer().getId());
+				if (customer != null) {
+					
+					RestaurantCustomerAddressEntity address = new RestaurantCustomerAddressEntity(null, null,
+							ifoodOrderAddress.getStreetName(), ifoodOrderAddress.getStreetNumber(),
+							ifoodOrderAddress.getNeighborhood(), ifoodOrderAddress.getComplement(),
+							ifoodOrderAddress.getPostalCode(), ifoodOrderAddress.getCity(),
+							ifoodOrderAddress.getState(), ifoodOrderAddress.getCountry(),
+							ifoodOrderAddress.getReference(),
+							new RestaurantCustomerAddressCoords(ifoodOrderAddress.getCoordinates().getLongitude(),
+									ifoodOrderAddress.getCoordinates().getLatitude()));
+
+					return customer.getAddresses().stream().filter(targetAddress -> targetAddress.equals(address))
+							.findFirst().orElse(null);
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public Object addNewCustomerAddressByIFoodOrderDeliveryAddress(UUID customerId,
