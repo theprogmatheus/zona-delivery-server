@@ -1,13 +1,13 @@
 package com.github.theprogmatheus.zonadelivery.server.dto;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.theprogmatheus.zonadelivery.server.entity.EventEntity;
-import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
+import com.github.theprogmatheus.zonadelivery.server.events.Event;
+import com.github.theprogmatheus.zonadelivery.server.events.EventType;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,30 +19,22 @@ public class EventDTO {
 
 	private UUID id;
 	private UUID restaurant;
-	private UUID order;
-	private OrderStatus status;
+	private EventType type;
 	private Date createdAt;
-	private Map<String, Object> metadata;
+	private Object data;
 
-	public EventDTO(EventEntity eventEntity) {
-		if (eventEntity != null) {
-			if (eventEntity.getId() != null)
-				this.id = eventEntity.getId();
+	public EventDTO(Event event) {
+		if (event != null) {
+			this.id = event.getId();
+			this.restaurant = event.getRestaurant();
+			this.type = event.getType();
+			this.createdAt = event.getCreatedAt();
+			if (event.getData() != null) {
+				
+				if (event.getData() instanceof RestaurantOrderEntity)
+					this.data = new RestaurantOrderDTO((RestaurantOrderEntity) event.getData());
 
-			if (eventEntity.getOrder() != null) {
-				this.order = eventEntity.getOrder().getId();
-				this.restaurant = eventEntity.getOrder().getRestaurant().getId();
 			}
-
-			if (eventEntity.getStatus() != null)
-				this.status = eventEntity.getStatus();
-
-			if (eventEntity.getCreatedAt() != null)
-				this.createdAt = eventEntity.getCreatedAt();
-
-			if (eventEntity.getMetadata() != null)
-				this.metadata = eventEntity.getMetadata();
 		}
 	}
-
 }

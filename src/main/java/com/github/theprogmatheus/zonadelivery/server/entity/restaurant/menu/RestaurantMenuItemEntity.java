@@ -38,7 +38,7 @@ public class RestaurantMenuItemEntity {
 	@JoinColumn(name = "menu_id")
 	private RestaurantMenuEntity menu;
 
-	@ManyToMany(mappedBy = "items")
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "items")
 	private Set<RestaurantMenuCategoryEntity> categories;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")

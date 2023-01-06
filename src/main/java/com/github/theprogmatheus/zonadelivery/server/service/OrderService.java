@@ -20,6 +20,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.Res
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPaymentMethod;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderTotal;
 import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
+import com.github.theprogmatheus.zonadelivery.server.events.EventType;
 import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItem;
@@ -216,7 +217,7 @@ public class OrderService {
 						customer, address, items, total, payment, OrderStatus.PLACED, iFoodOrderDetails, orderNote));
 
 		if (restaurantOrderEntity != null)
-			this.eventService.createNewEvent(restaurantOrderEntity, OrderStatus.PLACED, null);
+			this.eventService.createNewEvent(restaurantOrderEntity, EventType.ORDER_UPDATE, restaurantOrderEntity);
 
 		return restaurantOrderEntity;
 	}
@@ -285,14 +286,17 @@ public class OrderService {
 		if (order == null)
 			return "Order not found";
 
-		// emit event
-		Object result = this.eventService.createNewEvent(order, status, metadata);
-		if (result instanceof String)
-			return result;
-
 		order.setStatus(status);
+		order = this.orderRepository.saveAndFlush(order);
 
-		return this.orderRepository.saveAndFlush(order);
+		if (order != null) {
+			// emit event
+			Object result = this.eventService.createNewEvent(order, EventType.ORDER_UPDATE, order);
+			if (result instanceof String)
+				return result;
+		}
+
+		return order;
 	}
 
 	public String generateOrderSimpleId() {

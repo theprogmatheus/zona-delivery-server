@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,10 +37,10 @@ public class RestaurantMenuAditionalEntity {
 	@JoinColumn(name = "menu_id")
 	private RestaurantMenuEntity menu;
 
-	@ManyToMany(mappedBy = "aditionals")
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "aditionals")
 	private Set<RestaurantMenuItemEntity> items;
 
-	@ManyToMany(mappedBy = "options")
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "options")
 	private Set<RestaurantMenuOptionalEntity> optionals;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")
@@ -47,7 +48,7 @@ public class RestaurantMenuAditionalEntity {
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(512)")
 	private String description;
-	
+
 	@Column(nullable = false)
 	private double price;
 

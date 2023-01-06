@@ -216,6 +216,50 @@ public class IFoodAPI {
 		}
 	}
 
+	public static void acceptCancellation(String orderId) {
+		if (orderId != null && !orderId.isBlank()) {
+			try {
+
+				RestTemplate restTemplate = new RestTemplate();
+
+				HttpHeaders headers = createHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+
+				HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(new LinkedMultiValueMap<>(),
+						createHeaders());
+
+				IFoodEndPoints endPoint = IFoodEndPoints.ORDER_ACCEPT_CANCELLATION;
+
+				restTemplate.exchange(endPoint.createUrl(orderId), endPoint.getMethod(), httpEntity, Object.class);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void denyCancellation(String orderId) {
+		if (orderId != null && !orderId.isBlank()) {
+			try {
+
+				RestTemplate restTemplate = new RestTemplate();
+
+				HttpHeaders headers = createHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+
+				HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(new LinkedMultiValueMap<>(),
+						createHeaders());
+
+				IFoodEndPoints endPoint = IFoodEndPoints.ORDER_DENY_CANCELLATION;
+
+				restTemplate.exchange(endPoint.createUrl(orderId), endPoint.getMethod(), httpEntity, Object.class);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public static void eventsAcknowledgment(List<IFoodEvent> events) {
 		if (events != null && !events.isEmpty()) {
 			try {

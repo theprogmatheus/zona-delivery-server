@@ -38,7 +38,7 @@ public class RestaurantMenuOptionalEntity {
 	@JoinColumn(name = "menu_id")
 	private RestaurantMenuEntity menu;
 
-	@ManyToMany(mappedBy = "optionals")
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "optionals")
 	private Set<RestaurantMenuItemEntity> items;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(128)")

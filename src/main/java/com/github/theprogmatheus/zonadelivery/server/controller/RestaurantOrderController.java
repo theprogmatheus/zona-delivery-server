@@ -186,4 +186,37 @@ public class RestaurantOrderController {
 		}
 		return ResponseEntity.ok(request);
 	}
+
+	@PostMapping("/{orderId}/ifood/acceptCancellation")
+	public Object acceptCancellation(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
+		try {
+			Object result = this.orderService.getOrder(orderId);
+			if (result instanceof RestaurantOrderEntity) {
+				RestaurantOrderEntity order = ((RestaurantOrderEntity) result);
+				if (order.getIfoodOrder() != null)
+					IFoodAPI.acceptCancellation(order.getIfoodOrder().getId());
+
+			}
+			return ResponseEntity.ok();
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+		}
+	}
+
+	@PostMapping("/{orderId}/ifood/denyCancellation")
+	public Object denyCancellation(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
+		try {
+			Object result = this.orderService.getOrder(orderId);
+			if (result instanceof RestaurantOrderEntity) {
+				RestaurantOrderEntity order = ((RestaurantOrderEntity) result);
+				if (order.getIfoodOrder() != null)
+					IFoodAPI.denyCancellation(order.getIfoodOrder().getId());
+
+			}
+			return ResponseEntity.ok();
+		} catch (Exception exception) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+		}
+	}
+
 }
