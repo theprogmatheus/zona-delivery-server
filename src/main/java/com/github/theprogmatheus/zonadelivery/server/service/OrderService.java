@@ -119,10 +119,10 @@ public class OrderService {
 					if (ifoodItem.getOptions() != null && !ifoodItem.getOptions().isEmpty()) {
 						for (IFoodOrderItemOption ifoodItemOption : ifoodItem.getOptions()) {
 							aditionals.add(new RestaurantOrderItem(ifoodItemOption.getName(),
-									ifoodItemOption.getPrice(), ifoodItemOption.getQuantity(), null, null));
+									ifoodItemOption.getUnitPrice(), ifoodItemOption.getQuantity(), null, null));
 						}
 					}
-					items.add(new RestaurantOrderItem(ifoodItem.getName(), ifoodItem.getPrice(),
+					items.add(new RestaurantOrderItem(ifoodItem.getName(), ifoodItem.getUnitPrice(),
 							ifoodItem.getQuantity(), aditionals, ifoodItem.getObservations()));
 				}
 
