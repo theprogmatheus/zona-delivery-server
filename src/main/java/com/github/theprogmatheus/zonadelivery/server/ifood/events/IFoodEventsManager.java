@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
+import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodConsumerCancellationRequested;
 import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderCancelledEventHandler;
 import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderConcludedEventHandler;
 import com.github.theprogmatheus.zonadelivery.server.ifood.events.handlers.IFoodOrderConfirmedEventHandler;
@@ -38,6 +39,7 @@ public class IFoodEventsManager {
 		registerEventHandler(new IFoodOrderConfirmedEventHandler(this.orderService));
 		registerEventHandler(new IFoodOrderDispatchedEventHandler(this.orderService));
 		registerEventHandler(new IFoodOrderPlacedEventHandler(this.orderService));
+		registerEventHandler(new IFoodConsumerCancellationRequested(this.orderService));
 	}
 
 	/*
