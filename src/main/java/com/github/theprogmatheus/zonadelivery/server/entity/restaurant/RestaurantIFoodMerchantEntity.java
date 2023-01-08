@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Type;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ public class RestaurantIFoodMerchantEntity {
 	@Type(type = "uuid-char")
 	private UUID id;
 
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "restaurant_id")
 	private RestaurantEntity restaurant;

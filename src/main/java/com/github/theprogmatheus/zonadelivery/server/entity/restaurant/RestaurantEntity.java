@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuEntity;
 
@@ -49,6 +50,7 @@ public class RestaurantEntity {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
 	private Set<RestaurantMenuEntity> menus;
 
+	@JsonBackReference
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
 	private Set<RestaurantIFoodMerchantEntity> iFoodMerchants;
 
