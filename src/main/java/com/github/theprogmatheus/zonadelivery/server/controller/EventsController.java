@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.theprogmatheus.zonadelivery.server.dto.EventDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 import com.github.theprogmatheus.zonadelivery.server.events.Event;
 import com.github.theprogmatheus.zonadelivery.server.service.EventService;
 
+@SuppressWarnings("unchecked")
+@Secured(UserRole.USER_ROLE_NAME)
 @RestController
 @RequestMapping("/event/{restaurantId}")
 public class EventsController {

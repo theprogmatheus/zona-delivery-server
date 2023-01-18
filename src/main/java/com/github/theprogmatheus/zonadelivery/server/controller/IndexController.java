@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantDTO;
 import com.github.theprogmatheus.zonadelivery.server.dto.UserDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantRepository;
 import com.github.theprogmatheus.zonadelivery.server.service.UserService;
 
+@Secured(UserRole.USER_ROLE_NAME)
 @RestController
 @RequestMapping("/")
 public class IndexController {
@@ -27,12 +30,7 @@ public class IndexController {
 
 	@GetMapping("/")
 	public Object index() {
-		return "Index :/";
-	}
-
-	@GetMapping("/ping")
-	public String ping() {
-		return "Pong!";
+		return "Zona Delivery - Server";
 	}
 
 	@GetMapping("/restaurants")

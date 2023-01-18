@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,10 +25,12 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.Rest
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuCategoryEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.menu.RestaurantMenuItemEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 import com.github.theprogmatheus.zonadelivery.server.service.RestaurantMenuService;
 import com.github.theprogmatheus.zonadelivery.server.util.StringUtils;
 
 @SuppressWarnings("unchecked")
+@Secured(UserRole.USER_ROLE_NAME)
 @RestController
 @RequestMapping("/restaurant/{restaurantId}/menu")
 public class RestaurantMenuController {

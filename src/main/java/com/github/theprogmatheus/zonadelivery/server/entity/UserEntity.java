@@ -1,20 +1,22 @@
 package com.github.theprogmatheus.zonadelivery.server.entity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
@@ -23,6 +25,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.RoleAuthority;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,18 +57,34 @@ public class UserEntity implements UserDetails {
 	@Column(nullable = false, columnDefinition = "VARCHAR(256)")
 	private String password;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_authorities", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "authority_id") })
-	private List<UserAuthorityEntity> authorities;
+	@ElementCollection(targetClass = UserRole.class, fetch = FetchType.EAGER)
+	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"))
+	@Column(name = "role", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private Collection<UserRole> roles;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
 	private Set<RestaurantEntity> restaurants;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
-				.collect(Collectors.toList());
+		UserRole defaultRole = UserRole.USER;
+
+		List<GrantedAuthority> authorities = new ArrayList<>();
+
+		// setup default role
+		authorities.add(new SimpleGrantedAuthority("ROLE_" + defaultRole.name()));
+		for (RoleAuthority roleAuthority : defaultRole.getAuthorities())
+			authorities.add(new SimpleGrantedAuthority(roleAuthority.name()));
+
+		// setup another roles
+		for (UserRole role : this.roles) {
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+			for (RoleAuthority roleAuthority : role.getAuthorities())
+				authorities.add(new SimpleGrantedAuthority(roleAuthority.name()));
+		}
+
+		return authorities;
 	}
 
 	@Override

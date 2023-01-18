@@ -1,7 +1,8 @@
 package com.github.theprogmatheus.zonadelivery.server.entity.restaurant;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -14,7 +15,11 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.github.theprogmatheus.zonadelivery.server.enums.RoleAuthority;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,7 +56,14 @@ public class RestaurantEmployeeUserEntity implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Arrays.asList();
+		UserRole role = UserRole.EMPLOYEE;
+
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+		for (RoleAuthority roleAuthority : role.getAuthorities())
+			authorities.add(new SimpleGrantedAuthority(roleAuthority.name()));
+
+		return authorities;
 	}
 
 	@Override

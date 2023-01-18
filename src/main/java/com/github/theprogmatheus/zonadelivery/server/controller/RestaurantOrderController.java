@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderDTO;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderInputDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodCancellationReason;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodCancellationReasonRequest;
 import com.github.theprogmatheus.zonadelivery.server.service.OrderService;
 
+@Secured(value = { UserRole.USER_ROLE_NAME, UserRole.EMPLOYEE_ROLE_NAME })
 @RestController
 @RequestMapping("/restaurant/{restaurantId}/order")
 public class RestaurantOrderController {
@@ -31,20 +36,33 @@ public class RestaurantOrderController {
 	private OrderService orderService; // /restaurant/{restaurantId}/order/list
 
 	@GetMapping("/list")
-	public Object list(@PathVariable UUID restaurantId) {
+	public Object list(@PathVariable UUID restaurantId, @PathParam("search") String search) {
 		try {
-			return ResponseEntity.ok(this.orderService.listLastOrders(restaurantId).stream()
-					.map(order -> new RestaurantOrderDTO(order)).collect(Collectors.toList()));
+			List<RestaurantOrderDTO> result = this.orderService.listLastOrders(restaurantId).stream()
+					.map(order -> new RestaurantOrderDTO(order)).collect(Collectors.toList());
+
+			if (search != null && !search.isBlank())
+				result = result.stream().filter(order -> this.orderService.searchMatch(order, search))
+						.collect(Collectors.toList());
+
+			return ResponseEntity.ok(result);
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@GetMapping("/list/all")
-	public Object listAll(@PathVariable UUID restaurantId) {
+	public Object listAll(@PathVariable UUID restaurantId, @PathParam("search") String search) {
 		try {
-			return ResponseEntity.ok(this.orderService.listOrders(restaurantId).stream()
-					.map(order -> new RestaurantOrderDTO(order)).collect(Collectors.toList()));
+			List<RestaurantOrderDTO> result = this.orderService.listOrders(restaurantId).stream()
+					.map(order -> new RestaurantOrderDTO(order)).collect(Collectors.toList());
+
+			if (search != null && !search.isBlank())
+				result = result.stream().filter(order -> this.orderService.searchMatch(order, search))
+						.collect(Collectors.toList());
+
+			return ResponseEntity.ok(result);
 		} catch (Exception exception) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
 		}
@@ -64,6 +82,7 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/create")
 	public Object place(@PathVariable UUID restaurantId, @RequestBody RestaurantOrderInputDTO order) {
 		try {
@@ -81,6 +100,7 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/{orderId}/confirm")
 	public Object confirm(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
 		try {
@@ -96,6 +116,7 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/{orderId}/cancel")
 	public Object cancel(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
 		try {
@@ -140,6 +161,7 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/{orderId}/ready")
 	public Object ready(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
 		try {
@@ -156,6 +178,7 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@GetMapping("/{orderId}/ifood/cancellationReasons")
 	public Object cancellationReasons(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
 		try {
@@ -175,6 +198,7 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/{orderId}/ifood/requestCancellation")
 	public Object requestCancellation(@PathVariable UUID restaurantId, @PathVariable UUID orderId,
 			@RequestBody IFoodCancellationReasonRequest request) {
@@ -187,6 +211,7 @@ public class RestaurantOrderController {
 		return ResponseEntity.ok(request);
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/{orderId}/ifood/acceptCancellation")
 	public Object acceptCancellation(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
 		try {
@@ -203,6 +228,7 @@ public class RestaurantOrderController {
 		}
 	}
 
+	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/{orderId}/ifood/denyCancellation")
 	public Object denyCancellation(@PathVariable UUID restaurantId, @PathVariable UUID orderId) {
 		try {

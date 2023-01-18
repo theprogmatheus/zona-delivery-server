@@ -1,6 +1,7 @@
 package com.github.theprogmatheus.zonadelivery.server.service;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.theprogmatheus.zonadelivery.server.config.security.CustomPasswordEncoder;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 import com.github.theprogmatheus.zonadelivery.server.repository.UserRepository;
 import com.github.theprogmatheus.zonadelivery.server.util.Utils;
 
@@ -22,12 +24,12 @@ public class UserService {
 
 	public Object createDefaultUserIfNotExists() {
 		if (this.repository.count() <= 0)
-			return createNewUserAccount("admin", "admin", "admin@mail.com");
+			return createNewUserAccount("admin", "admin", "admin@mail.com", Arrays.asList(UserRole.ADMIN));
 
 		return null;
 	}
 
-	public Object createNewUserAccount(String username, String password, String email) {
+	public Object createNewUserAccount(String username, String password, String email, Collection<UserRole> roles) {
 
 		if (username != null && password != null) {
 
@@ -40,8 +42,8 @@ public class UserService {
 			if (getUserByUsername(username) != null)
 				return "The username already exists"; // user exists
 
-			return this.repository.saveAndFlush(
-					new UserEntity(null, username, email, PASSWORD_ENCODER.encode(password), Arrays.asList(), null));
+			return this.repository.saveAndFlush(new UserEntity(null, username, email, PASSWORD_ENCODER.encode(password),
+					roles != null ? roles : Arrays.asList(), null));
 		}
 
 		return "The 'username' and 'password' are required fields in your request body, do not leave them null";

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 import com.github.theprogmatheus.zonadelivery.server.service.RestaurantService;
 import com.github.theprogmatheus.zonadelivery.server.service.UserService;
 import com.github.theprogmatheus.zonadelivery.server.util.StringUtils;
 
+@Secured(UserRole.USER_ROLE_NAME)
 @RestController
 @RequestMapping("/restaurant")
 public class RestaurantController {

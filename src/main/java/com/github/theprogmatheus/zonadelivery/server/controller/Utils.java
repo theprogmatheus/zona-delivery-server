@@ -3,11 +3,15 @@ package com.github.theprogmatheus.zonadelivery.server.controller;
 import javax.websocket.server.PathParam;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
+
+@Secured(UserRole.USER_ROLE_NAME)
 @RestController
 @RequestMapping("/utils")
 public class Utils {

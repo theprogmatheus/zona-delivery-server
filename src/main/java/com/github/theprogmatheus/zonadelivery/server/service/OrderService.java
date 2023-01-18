@@ -1,5 +1,6 @@
 package com.github.theprogmatheus.zonadelivery.server.service;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerAddressEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
@@ -57,6 +60,35 @@ public class OrderService {
 		return this.orderRepository.findAll().stream()
 				.filter(order -> order.getRestaurant().getId().equals(restaurantId)).collect(Collectors.toList());
 
+	}
+
+	public boolean searchMatch(RestaurantOrderDTO order, String search) {
+		if (search == null || search.isBlank())
+			return true;
+
+		Object object = order;
+		if (search.contains(":")) {
+			try {
+				String[] searchSplit = search.split(":");
+				String fieldName = searchSplit[0];
+				search = search.substring((search.indexOf(":") + 1), search.length());
+				Field field = order.getClass().getDeclaredField(fieldName);
+				if (field != null) {
+					field.setAccessible(true);
+					object = field.get(order);
+				}
+			} catch (Exception exception) {
+				System.out.println("Erro ao tentar search: " + exception.getMessage());
+				exception.printStackTrace();
+			}
+		}
+
+		try {
+			return new ObjectMapper().writeValueAsString(object).toLowerCase().contains(search.toLowerCase());
+		} catch (Exception exception) {
+			System.out.println("Erro ao tentar search: " + exception.getMessage());
+			return false;
+		}
 	}
 
 	public Object getOrder(UUID orderId) {
