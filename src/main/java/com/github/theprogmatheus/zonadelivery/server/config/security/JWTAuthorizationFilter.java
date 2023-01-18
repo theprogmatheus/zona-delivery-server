@@ -16,19 +16,26 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEmployeeUserEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserType;
+import com.github.theprogmatheus.zonadelivery.server.repository.RestaurantEmployeeUserRepository;
 import com.github.theprogmatheus.zonadelivery.server.repository.UserRepository;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 	private final UserRepository userRepository;
+	private final RestaurantEmployeeUserRepository employeeUserRepository;
 
-	public JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+	public JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository,
+			RestaurantEmployeeUserRepository employeeUserRepository) {
 		super(authenticationManager);
 		this.userRepository = userRepository;
+		this.employeeUserRepository = employeeUserRepository;
 	}
 
 	@Override
@@ -58,20 +65,46 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 				accessToken = request.getParameter("access_token");
 
 			if (accessToken != null && !accessToken.isBlank()) {
-				String userUuid = JWT.require(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes())).build()
-						.verify(accessToken).getSubject();
 
-				if (userUuid != null) {
-					UserEntity user = this.userRepository.findById(UUID.fromString(userUuid)).orElse(null);
-					if (user != null)
-						return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+				DecodedJWT token = SecurityConfiguration.readJWTToken(accessToken);
+
+				Claim userTypeClaim = token.getClaim("userType");
+				
+				if (userTypeClaim != null) {
+					
+					UserType userType = UserType.valueOf(userTypeClaim.asString());
+					UUID userId = UUID.fromString(token.getSubject());
+
+					switch (userType) {
+
+					case USER:
+
+						UserEntity user = this.userRepository.findById(userId).orElse(null);
+						if (user != null)
+							return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
+						break;
+
+					case EMPLOYEE:
+
+						RestaurantEmployeeUserEntity employee = this.employeeUserRepository.findById(userId)
+								.orElse(null);
+						if (employee != null)
+							return new UsernamePasswordAuthenticationToken(employee, null, employee.getAuthorities());
+
+						break;
+
+					default:
+						break;
+					}
 				}
-
 			}
 			return null;
 		} catch (TokenExpiredException exception) {
-
 			// o token expirou :/
+
+		} catch (SignatureVerificationException exception) {
+			// token inválido
 		}
 
 		return null;

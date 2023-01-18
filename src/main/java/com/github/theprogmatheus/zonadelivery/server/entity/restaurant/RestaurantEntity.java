@@ -52,4 +52,7 @@ public class RestaurantEntity {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
 	private Set<RestaurantIFoodMerchantEntity> iFoodMerchants;
 
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
+	private Set<RestaurantEmployeeUserEntity> employees;
+
 }

@@ -5,9 +5,6 @@ import static com.github.theprogmatheus.zonadelivery.server.config.security.Secu
 import static com.github.theprogmatheus.zonadelivery.server.config.security.SecurityConfiguration.TOKEN_TYPE;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,11 +17,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theprogmatheus.zonadelivery.server.dto.AuthenticationResponseDTO;
 import com.github.theprogmatheus.zonadelivery.server.dto.UserDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.UserEntity;
+import com.github.theprogmatheus.zonadelivery.server.enums.UserType;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -53,18 +50,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 
-		Date expireAt = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
-		String token = JWT.create().withSubject(((UserEntity) authResult.getPrincipal()).getId().toString())
-				.withExpiresAt(expireAt).sign(Algorithm.HMAC512(System.getenv("SPRING_JWT_SECRET").getBytes()));
+		String token = SecurityConfiguration.createJWTToken(UserType.USER,
+				((UserEntity) authResult.getPrincipal()).getId().toString(), EXPIRATION_TIME);
 
-		Map<String, Object> responseBody = new HashMap<>();
-		responseBody.put("type", TOKEN_TYPE);
-		responseBody.put("accessToken", token);
-		responseBody.put("expireIn", EXPIRATION_TIME / 1_000);
-		responseBody.put("user", new UserDTO((UserEntity) authResult.getPrincipal()));
+		AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(TOKEN_TYPE, token,
+				EXPIRATION_TIME / 1_000, new UserDTO((UserEntity) authResult.getPrincipal()));
 
 		response.addHeader("Content-Type", "application/json");
-		response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+		response.getWriter().write(new ObjectMapper().writeValueAsString(authenticationResponse));
 		response.getWriter().flush();
 
 	}

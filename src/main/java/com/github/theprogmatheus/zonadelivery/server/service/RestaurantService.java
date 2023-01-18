@@ -69,7 +69,8 @@ public class RestaurantService {
 		while (getRestaurantByNameId(nameId) != null)
 			nameId = createNameIdByRestaurantName(name);
 
-		return this.restaurantRepository.saveAndFlush(new RestaurantEntity(null, nameId, name, owner, null, null));
+		return this.restaurantRepository
+				.saveAndFlush(new RestaurantEntity(null, nameId, name, owner, null, null, null));
 	}
 
 	public Object changeRestaurantNameId(RestaurantEntity restaurant, String newNameId) {
@@ -138,7 +139,7 @@ public class RestaurantService {
 		if (restaurant.getIFoodMerchants().stream().map(ifoodMerchant -> ifoodMerchant.getMerchantId())
 				.anyMatch(id -> merchantId.equals(id)))
 			return IFoodAPI.getMerchantStatus(merchantId);
-		
+
 		return "The merchantId is not controlled by this restaurant.";
 	}
 
