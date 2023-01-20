@@ -12,7 +12,7 @@ public class CommandLine implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		try (Scanner scanner = new Scanner(System.in)) {
 			String commandLine;
-			while ((commandLine = scanner.nextLine()) != null) {
+			while (scanner.hasNext() && (commandLine = scanner.nextLine()) != null) {
 				System.out.println("Executar linha de comando: " + commandLine);
 			}
 		}
