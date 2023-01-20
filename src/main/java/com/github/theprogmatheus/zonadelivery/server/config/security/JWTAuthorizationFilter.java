@@ -69,9 +69,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 				DecodedJWT token = SecurityConfiguration.readJWTToken(accessToken);
 
 				Claim userTypeClaim = token.getClaim("userType");
-				
-				if (userTypeClaim != null) {
-					
+
+				if (userTypeClaim != null && userTypeClaim.asString() != null) {
 					UserType userType = UserType.valueOf(userTypeClaim.asString());
 					UUID userId = UUID.fromString(token.getSubject());
 
@@ -105,6 +104,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 		} catch (SignatureVerificationException exception) {
 			// token inválido
+		} catch (Exception exception) {
+			System.out.println("Erro ao tentar authenticar " + exception.getMessage());
+			exception.printStackTrace();
 		}
 
 		return null;
