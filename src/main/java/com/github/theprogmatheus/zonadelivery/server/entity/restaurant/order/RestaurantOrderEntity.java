@@ -23,8 +23,6 @@ import org.hibernate.annotations.TypeDef;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
-import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerAddressEntity;
-import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
 import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
@@ -68,13 +66,11 @@ public class RestaurantOrderEntity {
 	@Column(columnDefinition = "VARCHAR(128)", nullable = false)
 	private String channel;
 
-	@ManyToOne
-	@JoinColumn(name = "customer_id")
-	private RestaurantCustomerEntity customer;
+	@Embedded
+	private RestaurantOrderCustomer customer;
 
-	@ManyToOne
-	@JoinColumn(name = "address_id")
-	private RestaurantCustomerAddressEntity address;
+	@Embedded
+	private RestaurantOrderAddress address;
 
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
@@ -93,8 +89,9 @@ public class RestaurantOrderEntity {
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	private IFoodOrderDetails ifoodOrder;
-	
-	private String note;
+
+	@Column(columnDefinition = "VARCHAR(512)")
+	private String observations;
 
 	@JsonInclude(Include.NON_NULL)
 	@Data
@@ -166,6 +163,45 @@ public class RestaurantOrderEntity {
 		private boolean prepaid;
 		private Map<String, ?> cash;
 		private Map<String, ?> card;
+
+	}
+
+	@JsonInclude(Include.NON_NULL)
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Embeddable
+	public static class RestaurantOrderCustomer {
+
+		@Column(name = "customer_name")
+		private String name;
+
+		@Column(name = "customer_phone")
+		private String phone;
+
+		@Column(name = "customer_ifood_id")
+		private String ifoodId;
+
+		@Column(name = "customer_whatsapp_id")
+		private String whatsappId;
+
+	}
+
+	@JsonInclude(Include.NON_NULL)
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Embeddable
+	public static class RestaurantOrderAddress {
+
+		@Column(name = "address_formatted", columnDefinition = "VARCHAR(2048)")
+		private String formatted;
+
+		@Column(name = "address_coord_latitude")
+		private double latitude;
+
+		@Column(name = "address_coord_longitude")
+		private double longitude;
 
 	}
 }

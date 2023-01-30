@@ -31,8 +31,8 @@ public class IndexController {
 	@GetMapping("/")
 	public Object index() {
 		return "Zona Delivery - Server";
-	}
-
+	}	
+	
 	@GetMapping("/restaurants")
 	public Object restaurants() {
 		return restaurantRepository.findAll().stream().map(restaurant -> new RestaurantDTO(restaurant))

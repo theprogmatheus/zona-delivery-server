@@ -54,8 +54,5 @@ public class RestaurantCustomerEntity {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
 	private Set<RestaurantCustomerAddressEntity> addresses;
-	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
-	private Set<RestaurantOrderEntity> orders;
 
 }

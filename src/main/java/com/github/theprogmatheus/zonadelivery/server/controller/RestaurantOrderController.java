@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderDTO;
-import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderInputDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
 import com.github.theprogmatheus.zonadelivery.server.enums.UserRole;
 import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
@@ -84,12 +83,12 @@ public class RestaurantOrderController {
 
 	@Secured(UserRole.USER_ROLE_NAME)
 	@PostMapping("/create")
-	public Object place(@PathVariable UUID restaurantId, @RequestBody RestaurantOrderInputDTO order) {
+	public Object place(@PathVariable UUID restaurantId, @RequestBody RestaurantOrderDTO order) {
 		try {
 // verificar ao fazer um pedido que não é para entrega, não precisar de endereço
 			Object result = this.orderService.placeOrder(restaurantId, order.getChannel(), null, order.getSimpleId(),
-					order.getDeliveryDateTime(), order.getOrderType(), order.getCustomerId(), order.getAddressId(),
-					order.getItems(), order.getTotal(), order.getPayment(), order.getNote());
+					order.getDeliveryDateTime(), order.getOrderType(), order.getCustomer(), order.getAddress(),
+					order.getItems(), order.getTotal(), order.getPayment(), order.getObservations());
 
 			if (result instanceof RestaurantOrderEntity)
 				return new RestaurantOrderDTO((RestaurantOrderEntity) result);
@@ -141,7 +140,8 @@ public class RestaurantOrderController {
 
 			if (order instanceof RestaurantOrderEntity) {
 				RestaurantOrderEntity theOrder = ((RestaurantOrderEntity) order);
-				if (theOrder.getIfoodOrder() != null && (theOrder.getIfoodOrder().getOrderType().equals("TAKEOUT"))) {
+				if (theOrder.getIfoodOrder() != null && (theOrder.getIfoodOrder().getOrderType().equals("TAKEOUT")
+						|| theOrder.getIfoodOrder().getDelivery().getDeliveredBy().equals("IFOOD"))) {
 					// manda ready
 					result = this.orderService.readyToPickupOrder(orderId);
 				} else {

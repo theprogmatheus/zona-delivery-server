@@ -56,7 +56,7 @@ public class RestaurantCustomerService {
 			return "Restaurant not found";
 
 		return this.customerRepository.saveAndFlush(
-				new RestaurantCustomerEntity(null, restaurant, name, ifoodId, whatsappId, phone, null, null));
+				new RestaurantCustomerEntity(null, restaurant, name, ifoodId, whatsappId, phone, null));
 	}
 
 	public Object changeCustomerName(UUID customerId, String name) {

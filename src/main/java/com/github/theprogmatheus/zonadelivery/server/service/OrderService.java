@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theprogmatheus.zonadelivery.server.dto.RestaurantOrderDTO;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.RestaurantEntity;
-import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerAddressEntity;
-import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.customer.RestaurantCustomerEntity;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderAddress;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderCustomer;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPayment;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPaymentMethod;
@@ -25,6 +25,7 @@ import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.Res
 import com.github.theprogmatheus.zonadelivery.server.enums.OrderStatus;
 import com.github.theprogmatheus.zonadelivery.server.events.EventType;
 import com.github.theprogmatheus.zonadelivery.server.ifood.IFoodAPI;
+import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDeliveryAddress;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderDetails;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.ifood.objects.IFoodOrderItemOption;
@@ -41,9 +42,6 @@ public class OrderService {
 
 	@Autowired
 	private OrderRepository orderRepository;
-
-	@Autowired
-	private RestaurantCustomerService customerService;
 
 	@Autowired
 	private RestaurantService restaurantService;
@@ -110,35 +108,44 @@ public class OrderService {
 
 			if (restaurant != null) {
 
-				RestaurantCustomerEntity customer = this.customerService
-						.getCustomeByIfoodCustomerId(ifoodOrder.getCustomer().getId());
+				RestaurantOrderCustomer customer = new RestaurantOrderCustomer(ifoodOrder.getCustomer().getName(),
+						ifoodOrder.getCustomer().getPhone().getNumber() + ";"
+								+ ifoodOrder.getCustomer().getPhone().getLocalizer(),
+						ifoodOrder.getCustomer().getId(), null);
 
-				// caso o banco de dados não tenha este cliente ainda, vamos cadastra-lo...
-				if (customer == null) {
-					Object result = this.customerService.createNewCustomerByIFoodOrderCustomer(restaurant.getId(),
-							ifoodOrder.getCustomer());
+				// build address
+				IFoodOrderDeliveryAddress ifoodAddress = ifoodOrder.getDelivery().getDeliveryAddress();
+				StringBuilder formattedAddress = new StringBuilder();
 
-					if (result instanceof RestaurantCustomerEntity)
-						customer = (RestaurantCustomerEntity) result;
-				}
+				if (ifoodAddress.getStreetName() != null)
+					formattedAddress.append(ifoodAddress.getStreetName());
 
-				if (customer == null)
-					return null;
+				if (ifoodAddress.getStreetNumber() != null)
+					formattedAddress.append(", " + ifoodAddress.getStreetNumber());
 
-				// precisamos resgatar/registrar o endereço fornecido pelo ifood
-				UUID addressId = null;
-				if (ifoodOrder.getDelivery() != null) {
-					Object result = this.customerService.getAddressByIFoodOrder(ifoodOrder);
-					if (result == null)
-						result = this.customerService.addNewCustomerAddressByIFoodOrderDeliveryAddress(customer.getId(),
-								ifoodOrder.getDelivery().getDeliveryAddress());
+				if (ifoodAddress.getNeighborhood() != null)
+					formattedAddress.append(", " + ifoodAddress.getNeighborhood());
 
-					if (result instanceof RestaurantCustomerAddressEntity)
-						addressId = ((RestaurantCustomerAddressEntity) result).getId();
+				if (ifoodAddress.getComplement() != null)
+					formattedAddress.append(", " + ifoodAddress.getComplement());
 
-				}
-				if (addressId == null && ifoodOrder.getOrderType().equals("DELIVERY"))
-					return null;
+				if (ifoodAddress.getPostalCode() != null)
+					formattedAddress.append(", " + ifoodAddress.getPostalCode());
+
+				if (ifoodAddress.getCity() != null)
+					formattedAddress.append(", " + ifoodAddress.getCity());
+
+				if (ifoodAddress.getState() != null)
+					formattedAddress.append(", " + ifoodAddress.getState());
+
+				if (ifoodAddress.getCountry() != null)
+					formattedAddress.append(", " + ifoodAddress.getCountry());
+
+				if (ifoodAddress.getReference() != null)
+					formattedAddress.append(", " + ifoodAddress.getReference());
+
+				RestaurantOrderAddress address = new RestaurantOrderAddress(formattedAddress.toString(),
+						ifoodAddress.getCoordinates().getLatitude(), ifoodAddress.getCoordinates().getLongitude());
 
 				// vamos listar os itens do pedido
 				List<RestaurantOrderItem> items = new ArrayList<>();
@@ -180,7 +187,7 @@ public class OrderService {
 				}
 
 				Object result = placeOrder(restaurant.getId(), "IFOOD", ifoodOrder.getId(), ifoodOrder.getDisplayId(),
-						deliveryDateTime, ifoodOrder.getOrderType(), customer.getId(), addressId, items, total, payment,
+						deliveryDateTime, ifoodOrder.getOrderType(), customer, address, items, total, payment,
 						orderNote);
 
 				if (result instanceof RestaurantOrderEntity)
@@ -192,8 +199,9 @@ public class OrderService {
 
 	// fazer um novo pedido
 	public Object placeOrder(UUID restaurantId, String channel, String ifoodId, String simpleId, Date deliveryDateTime,
-			String orderType, UUID customerId, UUID addressId, List<RestaurantOrderItem> items,
-			RestaurantOrderTotal total, RestaurantOrderPayment payment, String orderNote) {
+			String orderType, RestaurantOrderCustomer customer, RestaurantOrderAddress address,
+			List<RestaurantOrderItem> items, RestaurantOrderTotal total, RestaurantOrderPayment payment,
+			String observations) {
 
 		if (restaurantId == null)
 			return "The restaurantId is not valid";
@@ -210,10 +218,10 @@ public class OrderService {
 		if (orderType == null || orderType.isEmpty())
 			return "The orderType is not valid";
 
-		if (customerId == null)
+		if (customer == null || customer.getName() == null)
 			return "The customerId is not valid";
 
-		if (orderType.equals("DELIVERY") && addressId == null)
+		if (orderType.equals("DELIVERY") && address == null)
 			return "The addressId is not valid";
 
 		if (items == null || items.isEmpty())
@@ -229,24 +237,13 @@ public class OrderService {
 		if (restaurant == null)
 			return "Restaurant is not valid";
 
-		RestaurantCustomerEntity customer = this.customerService.getCustomerById(customerId);
-		if (customer == null)
-			return "Customer is not valid";
-
-		RestaurantCustomerAddressEntity address = null;
-		if (orderType.equals("DELIVERY")) {
-			address = this.customerService.getAddressById(addressId);
-			if (address == null)
-				return "Address is not valid";
-		}
-
 		IFoodOrderDetails iFoodOrderDetails = null;
 		if (ifoodId != null)
 			iFoodOrderDetails = IFoodAPI.getOrderDetails(ifoodId);
 
 		RestaurantOrderEntity restaurantOrderEntity = this.orderRepository.saveAndFlush(
 				new RestaurantOrderEntity(null, restaurant, new Date(), simpleId, deliveryDateTime, orderType, channel,
-						customer, address, items, total, payment, OrderStatus.PLACED, iFoodOrderDetails, orderNote));
+						customer, address, items, total, payment, OrderStatus.PLACED, iFoodOrderDetails, observations));
 
 		if (restaurantOrderEntity != null)
 			this.eventService.createNewEvent(restaurantOrderEntity, EventType.ORDER_UPDATE, restaurantOrderEntity);

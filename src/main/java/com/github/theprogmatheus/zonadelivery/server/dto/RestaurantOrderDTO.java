@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderAddress;
+import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderCustomer;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderItem;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderPayment;
 import com.github.theprogmatheus.zonadelivery.server.entity.restaurant.order.RestaurantOrderEntity.RestaurantOrderTotal;
@@ -29,13 +31,13 @@ public class RestaurantOrderDTO {
 	private Date deliveryDateTime;
 	private String orderType;
 	private OrderStatus status;
-	private RestaurantCustomerDTO customer;
-	private RestaurantCustomerAddressDTO address;
+	private RestaurantOrderCustomer customer;
+	private RestaurantOrderAddress address;
 	private List<RestaurantOrderItem> items;
 	private RestaurantOrderTotal total;
 	private RestaurantOrderPayment payment;
 	private IFoodOrderDetails ifoodOrder;
-	private String note;
+	private String observations;
 
 	public RestaurantOrderDTO(RestaurantOrderEntity restaurantOrderEntity) {
 		if (restaurantOrderEntity != null) {
@@ -65,10 +67,10 @@ public class RestaurantOrderDTO {
 				this.status = restaurantOrderEntity.getStatus();
 
 			if (restaurantOrderEntity.getCustomer() != null)
-				this.customer = new RestaurantCustomerDTO(restaurantOrderEntity.getCustomer());
+				this.customer = restaurantOrderEntity.getCustomer();
 
 			if (restaurantOrderEntity.getAddress() != null)
-				this.address = new RestaurantCustomerAddressDTO(restaurantOrderEntity.getAddress());
+				this.address = restaurantOrderEntity.getAddress();
 
 			if (restaurantOrderEntity.getItems() != null)
 				this.items = restaurantOrderEntity.getItems();
@@ -81,8 +83,8 @@ public class RestaurantOrderDTO {
 
 			if (restaurantOrderEntity.getIfoodOrder() != null)
 				this.ifoodOrder = restaurantOrderEntity.getIfoodOrder();
-			
-			this.note = restaurantOrderEntity.getNote();
+
+			this.observations = restaurantOrderEntity.getObservations();
 		}
 
 	}
